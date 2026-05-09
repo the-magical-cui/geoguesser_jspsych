@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoGuesser Metacognition Experiment</title>
+
+  <script src="jspsych/jspsych.js"></script>
+  <script src="jspsych/plugin-html-button-response.js"></script>
+  <script src="jspsych/plugin-html-keyboard-response.js"></script>
+  <!-- Pavlovia plugin: loaded from CDN (only executed on Pavlovia, not locally) -->
+  <script src="https://unpkg.com/@jspsych/plugin-pavlovia@1.0.4/index.js"></script>
+  <link rel="stylesheet" href="jspsych/jspsych.css">
+
+  <style>
+    /* ---- Base ---- */
+    body { font-family: sans-serif; background: #fff; }
+
+    /* ---- 2×2 button grid for first/second guess ---- */
+    .trial-guess .jspsych-html-button-response-btngroup,
+    .trial-guess2 .jspsych-html-button-response-btngroup {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 520px;
+      margin: 20px auto 0;
+    }
+    .trial-guess .jspsych-btn,
+    .trial-guess2 .jspsych-btn {
+      padding: 14px 10px;
+      font-size: 15px;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    /* ---- Confidence 1–5 buttons ---- */
+    .trial-confidence .jspsych-html-button-response-btngroup {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .trial-confidence .jspsych-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      font-size: 18px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ---- Chatroom ---- */
+    .chat-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 20px 20px 80px;
+    }
+    .chat-robot-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .chat-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+      background: #ddd;
+    }
+    .chat-robot-name {
+      font-size: 14px;
+      color: #555;
+    }
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 120px;
+    }
+    .chat-bubble {
+      background: #f0f0f0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      max-width: 88%;
+      align-self: flex-start;
+      font-size: 15px;
+      line-height: 1.7;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .chat-bubble.visible { opacity: 1; }
+
+    /* Typing dots */
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 12px 16px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      width: fit-content;
+      align-self: flex-start;
+    }
+    .typing-indicator .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #aaa;
+      opacity: 0.3;
+      animation: typingBounce 1.2s infinite;
+    }
+    .typing-indicator .dot:nth-child(2) { animation-delay: 0.25s; }
+    .typing-indicator .dot:nth-child(3) { animation-delay: 0.5s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-5px); }
+    }
+
+    /* ---- Fixed progress bar ---- */
+    .progress-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 20px 10px;
+      background: rgba(255, 255, 255, 0.96);
+      border-top: 1px solid #e0e0e0;
+      z-index: 9999;
+    }
+    .progress-label {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    .progress-track {
+      background: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .progress-fill {
+      background: #4a90d9;
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    /* ---- Scale page ---- */
+    .scale-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 20px 60px;
+    }
+    .scale-section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 22px 0 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
+    .scale-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .scale-lbl {
+      min-width: 80px;
+      font-size: 14px;
+      color: #333;
+    }
+    .scale-lbl.left { text-align: right; }
+    .scale-lbl.right { text-align: left; }
+    .scale-radios {
+      display: flex;
+      gap: 14px;
+    }
+    .scale-radios label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #666;
+    }
+    .scale-radios input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    #scale-error {
+      color: #c0392b;
+      text-align: center;
+      margin: 12px 0 0;
+      display: none;
+      font-size: 14px;
+    }
+
+    /* ---- Generic centered page ---- */
+    .page-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .robot-intro-img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 20px auto;
+      background: #ddd;
+    }
+
+    /* ---- Image sizes ---- */
+    /* Pages 1,2,4,5 all use stim-trial so the image never jumps between pages */
+    .stim-trial { max-width: 100%; height: 42vh; display: block; margin: 0 auto; object-fit: contain; }
+    /* Chatroom left-column image: slightly smaller to fit two-column layout */
+    .stim-chat  { max-width: 100%; max-height: 50vh; display: block; object-fit: contain; }
+
+    /* content padding so fixed bar doesn't overlap buttons */
+    .jspsych-content { padding-bottom: 70px; }
+  </style>
+</head>
+<body>
+  <script src="experiment.js"></script>
+</body>
+</html>
