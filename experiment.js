@@ -129,6 +129,128 @@ function makeScaleRowHTML(leftLabel, rightLabel, name) {
 // SECTION 4 — PAGE BUILDERS
 // ============================================================
 
+function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
+  const tl = [];
+  const practiceStimSrc  = `${STIMULI_DIR}/${practiceInfo.stimFile}.jpg`;
+  const practiceChoices  = [practiceInfo.opt1, practiceInfo.opt2, practiceInfo.opt3, practiceInfo.opt4];
+  const practiceSentences = (scriptsLookup[practiceInfo.stimFile] &&
+    scriptsLookup[practiceInfo.stimFile]['層級一']) || ['（練習用台詞）'];
+  const practiceRobot = { avatarFile: 'avatar_1', name: '練習機器人', toneName: '層級一', toneLevel: 0, slot: -1 };
+  const ps = { guess1: null, guess2: null }; // practice state
+
+  const INSTR_STYLE = 'max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;';
+
+  // ── Page 1: 歡迎 ──────────────────────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="${INSTR_STYLE}">
+        <h2 style="text-align:center;margin-bottom:24px;">歡迎參加本實驗！</h2>
+        <p>在本實驗中，您需要觀看一些地景照片，並從四個選項中選擇您認為正確的拍攝地點，之後選擇您對該猜測的信心程度，確認您的選擇後，請按確認進入下一頁。</p>
+        <p>注意，本實驗無回上一頁選項，請務必確認答案再進入下一頁。</p>
+      </div>`,
+    choices: ['確認了解，開始練習'],
+    data: { data_type: 'instruction' },
+  });
+
+  // ── Practice page 1: 第一次猜測 ───────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="text-align:center;padding-bottom:60px;">
+        <img src="${practiceStimSrc}" class="stim-trial" alt="練習圖片">
+        <p style="margin-top:14px;">請猜測您認為這張照片最可能拍攝的地點</p>
+      </div>`,
+    choices: practiceChoices,
+    css_classes: ['trial-guess'],
+    data: { data_type: 'practice' },
+    on_finish(data) { ps.guess1 = practiceChoices[data.response]; },
+  });
+
+  // ── Practice page 2: 信心評估 1 ───────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus() {
+      return `
+        <div style="text-align:center;padding-bottom:60px;">
+          <img src="${practiceStimSrc}" class="stim-trial" alt="練習圖片">
+          <p style="margin-top:14px;">您剛才選擇的答案是 <strong>${ps.guess1}</strong>，請問您對此選項的信心如何？</p>
+          <p style="color:#888;font-size:13px;">（1 分 = 非常沒信心；5 分 = 非常有信心）</p>
+        </div>`;
+    },
+    choices: ['1', '2', '3', '4', '5'],
+    css_classes: ['trial-confidence'],
+    data: { data_type: 'practice' },
+  });
+
+  // ── Page 4: 機器人說明（部分紅字）────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="${INSTR_STYLE}">
+        <p>在您選擇完成之後，您會看到一段機器人關於本題的作答想法。</p>
+        <p style="color:#c0392b;">注意：本機器人訓練時模擬人類回應行為，因此答案未必完全正確，請務必仔細評估內容及答案之後再決定是否採用機器人答案。</p>
+        <p>在觀看完機器人的作答想法後，會請您再次猜測本題答案，並評估您對答案的信心程度。</p>
+        <p style="color:#c0392b;">本實驗共有四輪，每輪有十五張圖。不同輪次之間，會由不同的機器人提供作答想法。</p>
+      </div>`,
+    choices: ['確認了解，繼續練習'],
+    data: { data_type: 'instruction' },
+  });
+
+  // ── Practice page 3: 機器人聊天室 ─────────────────────────
+  tl.push(buildChatroomPage(jsPsych, practiceRobot, practiceStimSrc, practiceSentences, ''));
+
+  // ── Practice page 4: 第二次猜測 ───────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus() {
+      return `
+        <div style="text-align:center;padding-bottom:60px;">
+          <img src="${practiceStimSrc}" class="stim-trial" alt="練習圖片">
+          <p style="margin-top:14px;">
+            您上次選擇的是 <strong>${ps.guess1}</strong>，
+            機器人認為這裡是 <strong>${practiceInfo.corrAns}</strong>，<br>
+            請再次猜測您認為這張照片最可能拍攝的地點
+          </p>
+        </div>`;
+    },
+    choices: practiceChoices,
+    css_classes: ['trial-guess2'],
+    data: { data_type: 'practice' },
+    on_finish(data) { ps.guess2 = practiceChoices[data.response]; },
+  });
+
+  // ── Practice page 5: 信心評估 2 ───────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus() {
+      return `
+        <div style="text-align:center;padding-bottom:60px;">
+          <img src="${practiceStimSrc}" class="stim-trial" alt="練習圖片">
+          <p style="margin-top:14px;">您剛才選擇的答案是 <strong>${ps.guess2}</strong>，請問您對此選項的信心如何？</p>
+          <p style="color:#888;font-size:13px;">（1 分 = 非常沒信心；5 分 = 非常有信心）</p>
+        </div>`;
+    },
+    choices: ['1', '2', '3', '4', '5'],
+    css_classes: ['trial-confidence'],
+    data: { data_type: 'practice' },
+  });
+
+  // ── Page 8: 最終說明，進入正式實驗 ─────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="${INSTR_STYLE}">
+        <p>每一輪於十五張圖片回答完成後，會請您評估一些關於本輪機器人的看法。</p>
+        <p>若以上資訊有問題，可來信詢問實驗者，若無其他疑問，請按確認開始實驗。</p>
+      </div>`,
+    choices: ['確認，開始實驗'],
+    data: { data_type: 'instruction' },
+  });
+
+  return tl;
+}
+
 function buildRestPage(jsPsych, blockNum) {
   return {
     type: jsPsychHtmlButtonResponse,
@@ -548,9 +670,14 @@ async function main() {
     });
   });
 
+  // ---- Pick practice image (fixed, excluded from main pool) ----
+  // Use first B-group trial that has scripts; fall back to first B-group trial
+  const practiceInfo = trialsData.filter(t => t.group === 'B' && scriptsLookup[t.stimFile])[0]
+                    || trialsData.filter(t => t.group === 'B')[0];
+
   // ---- Assign trials ----
   const groupA = shuffle(trialsData.filter(t => t.group === 'A')).slice(0, 30);
-  const groupB = shuffle(trialsData.filter(t => t.group === 'B')).slice(0, 30);
+  const groupB = shuffle(trialsData.filter(t => t.group === 'B' && t.stimFile !== practiceInfo.stimFile)).slice(0, 30);
   const all60  = shuffle([...groupA, ...groupB]);
 
   const trialGroups = [
@@ -578,6 +705,9 @@ async function main() {
   if (!local) {
     timeline.push({ type: jsPsychPavlovia, command: 'init' });
   }
+
+  // ---- Intro + practice pages ----
+  timeline.push(...buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup));
 
   let globalTrialNum = 0;
 
