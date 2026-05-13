@@ -32,50 +32,51 @@ function shuffle(arr) {
   return a;
 }
 
+// Full RFC-4180 CSV parser — handles quoted fields with embedded newlines.
 function parseCSV(text) {
-  const clean = text.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-  const lines  = clean.split('\n');
-  const headers = csvSplitLine(lines[0]).map(h => h.trim());
-  const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    const vals = csvSplitLine(lines[i]);
-    if (vals.every(v => v.trim() === '')) continue;
-    const obj = {};
-    headers.forEach((h, idx) => { obj[h] = (vals[idx] || '').trim(); });
-    rows.push(obj);
-  }
-  return rows;
-}
+  // Normalise BOM and line endings
+  const src = text.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-function csvSplitLine(line) {
-  const vals = [];
-  let cur = '', inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') {
-      if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
-      else { inQ = !inQ; }
-    } else if (ch === ',' && !inQ) {
-      vals.push(cur); cur = '';
+  // Character-by-character tokeniser
+  const records = [];
+  let fields = [], cur = '', inQ = false, i = 0;
+
+  while (i < src.length) {
+    const ch = src[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (src[i + 1] === '"') { cur += '"'; i += 2; }   // escaped quote
+        else { inQ = false; i++; }                         // closing quote
+      } else { cur += ch; i++; }
     } else {
-      cur += ch;
+      if (ch === '"') { inQ = true; i++; }
+      else if (ch === ',') { fields.push(cur); cur = ''; i++; }
+      else if (ch === '\n') {
+        fields.push(cur); cur = '';
+        if (fields.some(f => f.trim() !== '')) records.push(fields);
+        fields = []; i++;
+      } else { cur += ch; i++; }
     }
   }
-  vals.push(cur);
-  return vals;
+  // flush last field / record
+  fields.push(cur);
+  if (fields.some(f => f.trim() !== '')) records.push(fields);
+
+  if (records.length === 0) return [];
+  const headers = records[0].map(h => h.trim());
+  return records.slice(1).map(vals => {
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] !== undefined ? vals[idx].trim() : ''; });
+    return obj;
+  });
 }
 
-// Split script text into 4–5 sentences on 。
-function splitToSentences(text) {
+// Split script text into chat bubbles on newlines.
+// Each non-empty line becomes one bubble.
+function splitToBubbles(text) {
   if (!text || !text.trim()) return ['（無內容）'];
-  const raw = text.split('。').map(s => s.trim()).filter(s => s !== '');
-  if (raw.length === 0) return [text.trim()];
-  const sents = raw.map((s, i) => (i < raw.length - 1 ? s + '。' : s));
-  if (sents.length <= 5) return sents;
-  // merge tail into sentence 5
-  const result = sents.slice(0, 4);
-  result.push(sents.slice(4).join(''));
-  return result;
+  const bubbles = text.split('\n').map(s => s.trim()).filter(s => s !== '');
+  return bubbles.length > 0 ? bubbles : [text.trim()];
 }
 
 function isLocalRun() {
@@ -545,10 +546,15 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
 // SECTION 5 — CHAT ANIMATION
 // ============================================================
 
+// Scroll the page so that the given element is visible at the bottom.
+function scrollToBottom(el) {
+  el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
 function animateChatSentences(sentences, container, onComplete) {
-  const DWELL_MIN   = 2000; // ms
-  const DWELL_RANGE = 1000; // ±500 centred on 2500
-  const TYPING_MS   = 750;  // how long to show typing dots before each sentence
+  const DWELL_MIN   = 1000; // ms to wait after bubble appears before next one
+  const DWELL_RANGE = 500;  // random extra 0–500 ms → total dwell ≈ 1000–1500 ms
+  const TYPING_MS   = 750;  // how long to show typing dots before each bubble
 
   // Reusable typing indicator element
   const typingEl = document.createElement('div');
@@ -566,7 +572,7 @@ function animateChatSentences(sentences, container, onComplete) {
 
     // Show typing indicator
     container.appendChild(typingEl);
-    container.scrollTop = container.scrollHeight;
+    scrollToBottom(typingEl);
 
     setTimeout(function () {
       // Remove typing indicator, show sentence bubble
@@ -576,12 +582,12 @@ function animateChatSentences(sentences, container, onComplete) {
       bubble.className = 'chat-bubble';
       bubble.textContent = sentences[idx];
       container.appendChild(bubble);
-      container.scrollTop = container.scrollHeight;
 
       // Trigger CSS fade-in (needs two rAF frames for transition to fire)
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           bubble.classList.add('visible');
+          scrollToBottom(bubble);  // scroll after element has rendered height
         });
       });
 
@@ -657,16 +663,14 @@ async function main() {
     return;
   }
 
-  // ---- Build scripts lookup: { stimFile: { toneName: sentences[] } } ----
-  // Only the "答對" version is used
+  // ---- Build scripts lookup: { stimFile: { toneName: bubbles[] } } ----
   const scriptsLookup = {};
   scriptsData.forEach(row => {
-    if (row['版本'] !== '答對') return;
     const key = row['stimFile'];
     if (!key) return;
     scriptsLookup[key] = {};
     TONE_KEYS.forEach(tk => {
-      scriptsLookup[key][tk] = splitToSentences(row[tk]);
+      scriptsLookup[key][tk] = splitToBubbles(row[tk]);
     });
   });
 
