@@ -146,11 +146,14 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div style="${INSTR_STYLE}">
-        <h2 style="text-align:center;margin-bottom:24px;">歡迎參加本實驗！</h2>
-        <p>本實驗旨在了解對地景的判斷，及與機器人共同完成作業的決策歷程。本實驗包含三個部分：（一）個人資料填答　（二）猜測地景拍攝地點的主要實驗，共四個區塊，每個區塊包含 15 張圖片　（三）後測問卷</p>
+        <h2 style="margin-bottom:24px;">歡迎參加本實驗！</h2>
+        <p>本實驗旨在了解對地景的判斷，及與機器人共同完成作業的決策歷程。本實驗包含三個部分：<br>
+        （一）個人資料填答<br>
+        （二）猜測地景拍攝地點的主要實驗<br>
+        （三）後測問卷</p>
         <p style="color:#c0392b;">注意，本實驗無回上一頁選項，在實驗各階段，皆請務必確認答案再進入下一頁。</p>
         <p>以上資訊若有問題請來信聯絡實驗聯絡人，若確認了解並同意以上資訊，請勾選同意，並按確認鍵開始填答基本資料。</p>
-        <label style="display:flex;align-items:center;gap:10px;justify-content:center;margin-top:20px;font-size:15px;cursor:pointer;">
+        <label style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;font-size:15px;cursor:pointer;">
           <input type="checkbox" id="consent-check" style="width:20px;height:20px;cursor:pointer;">
           我同意參與本實驗
         </label>
@@ -173,22 +176,25 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div style="${INSTR_STYLE}">
-        <h3 style="font-weight:bold;margin-bottom:20px;">第一部分：個人資料</h3>
-        <div style="margin:16px 0;">
-          <label style="display:block;margin-bottom:6px;">您的姓名（選填）：</label>
-          <input type="text" id="demo-name" placeholder="可留空"
-            style="width:100%;max-width:300px;padding:8px 10px;font-size:15px;border:1px solid #ccc;border-radius:4px;">
+        <h3 style="font-weight:bold;margin-bottom:24px;">第一部分：個人資料</h3>
+        <div style="display:flex;align-items:center;gap:14px;margin:14px 0;">
+          <label style="min-width:140px;font-size:15px;"><strong>您的姓名（選填）：</strong></label>
+          <input type="text" id="demo-name" placeholder="請輸入"
+            style="width:260px;padding:6px 10px;font-size:15px;border:0;border-bottom:1px solid #999;outline:none;background:transparent;">
         </div>
-        <div style="margin:16px 0;">
-          <label style="display:block;margin-bottom:8px;"><strong>性別（必填）：</strong></label>
-          <label style="margin-right:20px;cursor:pointer;"><input type="radio" name="demo-gender" value="生理女"> 生理女</label>
-          <label style="margin-right:20px;cursor:pointer;"><input type="radio" name="demo-gender" value="生理男"> 生理男</label>
-          <label style="cursor:pointer;"><input type="radio" name="demo-gender" value="不願透露"> 不願透露</label>
+        <div style="display:flex;align-items:center;gap:14px;margin:14px 0;">
+          <label style="min-width:140px;font-size:15px;"><strong>性別（必填）：</strong></label>
+          <div style="display:flex;gap:20px;">
+            <label style="cursor:pointer;white-space:nowrap;"><input type="radio" name="demo-gender" value="生理女"> 生理女</label>
+            <label style="cursor:pointer;white-space:nowrap;"><input type="radio" name="demo-gender" value="生理男"> 生理男</label>
+            <label style="cursor:pointer;white-space:nowrap;"><input type="radio" name="demo-gender" value="不願透露"> 不願透露</label>
+          </div>
         </div>
-        <div style="margin:16px 0;">
-          <label style="display:block;margin-bottom:6px;"><strong>年齡（必填）：</strong></label>
-          <input type="number" id="demo-age" min="1" max="120" placeholder="請輸入年齡"
-            style="width:120px;padding:8px 10px;font-size:15px;border:1px solid #ccc;border-radius:4px;">
+        <div style="display:flex;align-items:center;gap:14px;margin:14px 0;">
+          <label style="min-width:140px;font-size:15px;"><strong>年齡（必填）：</strong></label>
+          <input type="number" id="demo-age" min="1" max="120" step="1" placeholder="請輸入"
+            style="width:100px;padding:6px 10px;font-size:15px;border:0;border-bottom:1px solid #999;outline:none;background:transparent;">
+          <span id="age-error" style="color:#c0392b;font-size:13px;margin-left:8px;display:none;">請輸入正整數</span>
         </div>
       </div>`,
     choices: ['確認'],
@@ -198,8 +204,10 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
       if (btn) btn.disabled = true;
       function checkFilled() {
         const gender = document.querySelector('input[name="demo-gender"]:checked');
-        const age = document.getElementById('demo-age').value;
-        return gender && age && parseInt(age) > 0;
+        const raw = document.getElementById('demo-age').value;
+        const parsed = Number(raw);
+        const ageOk = raw !== '' && Number.isInteger(parsed) && parsed >= 1;
+        return gender && ageOk;
       }
       document.querySelectorAll('input[name="demo-gender"]').forEach(r => {
         r.addEventListener('change', () => {
@@ -208,7 +216,12 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
         });
       });
       document.getElementById('demo-age').addEventListener('input', function () {
-        demoCaptured.age = parseInt(this.value) || null;
+        const raw = this.value;
+        const parsed = Number(raw);
+        const isValid = raw !== '' && Number.isInteger(parsed) && parsed >= 1;
+        const errEl = document.getElementById('age-error');
+        if (errEl) errEl.style.display = (raw !== '' && !isValid) ? '' : 'none';
+        demoCaptured.age = isValid ? parsed : null;
         if (btn) btn.disabled = !checkFilled();
       });
       document.getElementById('demo-name').addEventListener('input', function () {
@@ -325,7 +338,7 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
       <div style="${INSTR_STYLE}">
         <p style="color:#c0392b;">本實驗共有四輪，每輪有十五張圖。不同輪次之間，會由不同的機器人提供作答想法。</p>
         <p>每一輪於十五張圖片回答完成後，會請您評估一些關於本輪機器人的看法。</p>
-        <p>若以上資訊有問題，可來信詢問實驗者，若無其他疑問，請按確認開始實驗。</p>
+        <p>若以上資訊有問題，可來信詢問實驗者，若無其他疑問，請按確認開始正式實驗。</p>
       </div>`,
     choices: ['確認，開始實驗'],
     data: { data_type: 'instruction' },
