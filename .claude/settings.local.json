@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(extract-text 指導語.docx)",
+      "Bash(pandoc 指導語.docx -t plain)",
+      "Bash(python -c ' *)",
+      "Bash(node --check experiment.js)"
+    ]
+  }
+}

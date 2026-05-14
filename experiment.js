@@ -141,16 +141,97 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
 
   const INSTR_STYLE = 'max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;';
 
-  // ── Page 1: 歡迎 ──────────────────────────────────────────
+  // ── Page 1: 歡迎 / 同意書 ────────────────────────────────
   tl.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div style="${INSTR_STYLE}">
         <h2 style="text-align:center;margin-bottom:24px;">歡迎參加本實驗！</h2>
-        <p>在本實驗中，您需要觀看一些地景照片，並從四個選項中選擇您認為正確的拍攝地點，之後選擇您對該猜測的信心程度，確認您的選擇後，請按確認進入下一頁。</p>
-        <p>注意，本實驗無回上一頁選項，請務必確認答案再進入下一頁。</p>
+        <p>本實驗旨在了解對地景的判斷，及與機器人共同完成作業的決策歷程。本實驗包含三個部分：（一）個人資料填答　（二）猜測地景拍攝地點的主要實驗，共四個區塊，每個區塊包含 15 張圖片　（三）後測問卷</p>
+        <p style="color:#c0392b;">注意，本實驗無回上一頁選項，在實驗各階段，皆請務必確認答案再進入下一頁。</p>
+        <p>以上資訊若有問題請來信聯絡實驗聯絡人，若確認了解並同意以上資訊，請勾選同意，並按確認鍵開始填答基本資料。</p>
+        <label style="display:flex;align-items:center;gap:10px;justify-content:center;margin-top:20px;font-size:15px;cursor:pointer;">
+          <input type="checkbox" id="consent-check" style="width:20px;height:20px;cursor:pointer;">
+          我同意參與本實驗
+        </label>
       </div>`,
-    choices: ['確認了解，開始練習'],
+    choices: ['確認，開始填答基本資料'],
+    data: { data_type: 'consent' },
+    on_load() {
+      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      if (btn) btn.disabled = true;
+      document.getElementById('consent-check').addEventListener('change', function () {
+        if (btn) btn.disabled = !this.checked;
+      });
+    },
+    on_finish(data) { data.consented = true; },
+  });
+
+  // ── Page 2: 個人資料 ─────────────────────────────────────
+  const demoCaptured = {};
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="${INSTR_STYLE}">
+        <h3 style="font-weight:bold;margin-bottom:20px;">第一部分：個人資料</h3>
+        <div style="margin:16px 0;">
+          <label style="display:block;margin-bottom:6px;">您的姓名（選填）：</label>
+          <input type="text" id="demo-name" placeholder="可留空"
+            style="width:100%;max-width:300px;padding:8px 10px;font-size:15px;border:1px solid #ccc;border-radius:4px;">
+        </div>
+        <div style="margin:16px 0;">
+          <label style="display:block;margin-bottom:8px;"><strong>性別（必填）：</strong></label>
+          <label style="margin-right:20px;cursor:pointer;"><input type="radio" name="demo-gender" value="生理女"> 生理女</label>
+          <label style="margin-right:20px;cursor:pointer;"><input type="radio" name="demo-gender" value="生理男"> 生理男</label>
+          <label style="cursor:pointer;"><input type="radio" name="demo-gender" value="不願透露"> 不願透露</label>
+        </div>
+        <div style="margin:16px 0;">
+          <label style="display:block;margin-bottom:6px;"><strong>年齡（必填）：</strong></label>
+          <input type="number" id="demo-age" min="1" max="120" placeholder="請輸入年齡"
+            style="width:120px;padding:8px 10px;font-size:15px;border:1px solid #ccc;border-radius:4px;">
+        </div>
+      </div>`,
+    choices: ['確認'],
+    data: { data_type: 'demographics' },
+    on_load() {
+      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      if (btn) btn.disabled = true;
+      function checkFilled() {
+        const gender = document.querySelector('input[name="demo-gender"]:checked');
+        const age = document.getElementById('demo-age').value;
+        return gender && age && parseInt(age) > 0;
+      }
+      document.querySelectorAll('input[name="demo-gender"]').forEach(r => {
+        r.addEventListener('change', () => {
+          demoCaptured.gender = r.value;
+          if (btn) btn.disabled = !checkFilled();
+        });
+      });
+      document.getElementById('demo-age').addEventListener('input', function () {
+        demoCaptured.age = parseInt(this.value) || null;
+        if (btn) btn.disabled = !checkFilled();
+      });
+      document.getElementById('demo-name').addEventListener('input', function () {
+        demoCaptured.name = this.value;
+      });
+    },
+    on_finish(data) {
+      data.demo_name   = demoCaptured.name   || '';
+      data.demo_gender = demoCaptured.gender || '';
+      data.demo_age    = demoCaptured.age    || null;
+    },
+  });
+
+  // ── Page 3: 第二部分說明 ──────────────────────────────────
+  tl.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="${INSTR_STYLE}">
+        <h3 style="font-weight:bold;margin-bottom:16px;">第二部分：正式實驗</h3>
+        <p>在本部分的實驗中，您需要觀看一些地景照片，並從四個選項中選擇您認為正確的拍攝地點，之後選擇您對該猜測的信心程度，確定您的選擇後，請按確認進入下一頁。</p>
+        <p>了解以上資訊後，請按確認鍵開始練習以上部分的實驗。</p>
+      </div>`,
+    choices: ['確認，開始練習'],
     data: { data_type: 'instruction' },
   });
 
@@ -184,17 +265,17 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     data: { data_type: 'practice' },
   });
 
-  // ── Page 4: 機器人說明（部分紅字）────────────────────────
+  // ── Page 6: 機器人說明（部分紅字）────────────────────────
   tl.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div style="${INSTR_STYLE}">
-        <p>在您選擇完成之後，您會看到一段機器人關於本題的作答想法。</p>
+        <p>每一題在您完成如先前頁面的選擇後，會展示一段機器人關於本題的作答想法。</p>
         <p style="color:#c0392b;">注意：本機器人訓練時模擬人類回應行為，因此答案未必完全正確，請務必仔細評估內容及答案之後再決定是否採用機器人答案。</p>
         <p>在觀看完機器人的作答想法後，會請您再次猜測本題答案，並評估您對答案的信心程度。</p>
-        <p style="color:#c0392b;">本實驗共有四輪，每輪有十五張圖。不同輪次之間，會由不同的機器人提供作答想法。</p>
+        <p>了解以上資訊後，請按確認鍵開始練習以上部分的實驗。</p>
       </div>`,
-    choices: ['確認了解，繼續練習'],
+    choices: ['確認，繼續練習'],
     data: { data_type: 'instruction' },
   });
 
@@ -237,11 +318,12 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     data: { data_type: 'practice' },
   });
 
-  // ── Page 8: 最終說明，進入正式實驗 ─────────────────────────
+  // ── Page 10: 正式實驗說明 ─────────────────────────────────
   tl.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div style="${INSTR_STYLE}">
+        <p style="color:#c0392b;">本實驗共有四輪，每輪有十五張圖。不同輪次之間，會由不同的機器人提供作答想法。</p>
         <p>每一輪於十五張圖片回答完成後，會請您評估一些關於本輪機器人的看法。</p>
         <p>若以上資訊有問題，可來信詢問實驗者，若無其他疑問，請按確認開始實驗。</p>
       </div>`,
@@ -542,6 +624,128 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
   };
 }
 
+function buildMAIPage(jsPsych, participantId) {
+  const MAI_ITEMS = [
+    '我會定期問自己是否達到了學習目標。',
+    '在回答問題前，我會考慮幾種不同的解決方案。',
+    '我會嘗試使用過去曾有效的學習策略。',
+    '我在學習時會控制進度，以確保有足夠的時間。',
+    '我了解自己在智識上的優勢與弱點。',
+    '在開始一項任務之前，我會思考自己真正需要學習什麼。',
+    '完成測驗後，我知道自己表現得如何。',
+    '在開始任務之前，我會設定具體的目標。',
+    '遇到重要資訊時，我會放慢速度仔細閱讀。',
+    '我知道什麼樣的資訊是最重要的學習內容。',
+    '解題時，我會問自己是否已考慮過所有選項。',
+    '我擅長組織資訊。',
+    '我會有意識地將注意力集中在重要資訊上。',
+    '我使用的每一種策略都有其特定目的。',
+    '當我對主題有一定了解時，學習效果最佳。',
+    '我知道老師期望我學習什麼。',
+    '我擅長記憶資訊。',
+    '我會依據不同情境使用不同的學習策略。',
+    '完成任務後，我會問自己是否有更簡單的方法。',
+    '我能掌控自己的學習成效。',
+    '我會定期複習，以幫助自己理解重要的概念關聯。',
+    '在開始學習前，我會針對學習材料自我提問。',
+    '我會想出幾種解決問題的方法，並選擇最佳方案。',
+    '完成學習後，我會總結自己所學的內容。',
+    '當我不理解某些內容時，我會向他人尋求幫助。',
+    '在需要時，我能夠激勵自己學習。',
+    '我清楚自己在學習時使用了哪些策略。',
+    '在學習過程中，我會分析所用策略的效用。',
+    '我會利用自己的智識優勢來彌補弱點。',
+    '我專注於新資訊的意義與重要性。',
+    '我會自己創造例子，使資訊更具意義。',
+    '我善於評斷自己對某事物的理解程度。',
+    '我發現自己會自動使用有效的學習策略。',
+    '我發現自己會定期停下來檢查自己的理解情況。',
+    '我知道所使用的每種策略在何時最為有效。',
+    '完成後，我會問自己目標達成的程度如何。',
+    '學習時，我會畫圖或圖表來幫助理解。',
+    '解決問題後，我會問自己是否已考慮過所有選項。',
+    '我嘗試將新資訊用自己的話表達出來。',
+    '當我無法理解時，我會改變策略。',
+    '我利用文本的組織結構來幫助學習。',
+    '開始任務前，我會仔細閱讀指示。',
+    '我會問自己所讀的內容是否與已知知識相關。',
+    '當我感到困惑時，我會重新評估自己的假設。',
+    '我會合理安排時間，以最佳方式達成目標。',
+    '當我對主題感興趣時，我學習效果更好。',
+    '我嘗試將學習分解成較小的步驟。',
+    '我專注於整體意義，而非細節。',
+    '在學習新事物時，我會問自己目前的學習狀況如何。',
+    '完成任務後，我會問自己是否已盡可能地充分學習。',
+    '遇到不清楚的新資訊時，我會停下來重新閱讀。',
+    '當我感到困惑時，我會停下來重新閱讀。',
+  ];
+
+  const MAI_LABELS = ['非常不符合', '不符合', '普通', '符合', '非常符合'];
+  const COL_W = 74; // px per radio column
+  const captured = {};
+
+  const headerHTML = `
+    <div style="display:flex;align-items:center;padding:8px 0 6px;border-bottom:2px solid #ccc;
+                position:sticky;top:0;background:#fff;z-index:10;">
+      <div style="min-width:36px;"></div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;flex-shrink:0;">
+        ${MAI_LABELS.map(lbl =>
+          `<div style="width:${COL_W}px;text-align:center;font-size:12px;color:#555;">${lbl}</div>`
+        ).join('')}
+      </div>
+    </div>`;
+
+  const itemsHTML = MAI_ITEMS.map((item, i) => `
+    <div style="display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;${i % 2 === 0 ? 'background:#fafafa;' : ''}">
+      <div style="min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;">${i + 1}.</div>
+      <div style="flex:1;font-size:14px;line-height:1.5;padding-right:12px;">${item}</div>
+      <div style="display:flex;flex-shrink:0;">
+        ${[1, 2, 3, 4, 5].map(v => `
+          <label style="width:${COL_W}px;display:flex;justify-content:center;align-items:center;cursor:pointer;">
+            <input type="radio" name="mai_${i}" value="${v}" style="width:17px;height:17px;cursor:pointer;">
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="max-width:860px;margin:0 auto;padding:20px 20px 80px;">
+        <h3 style="font-weight:bold;margin-bottom:4px;">第三部分：問卷填答</h3>
+        <p style="font-size:14px;color:#555;margin-bottom:14px;">
+          以下題目包含了一些可能符合或不符合您的敘述，請根據您認為敘述符合您的程度回答問題：
+        </p>
+        ${headerHTML}
+        ${itemsHTML}
+        <div id="mai-error" style="color:#c0392b;text-align:center;margin:12px 0 0;display:none;font-size:14px;">
+          請回答所有題目後再送出
+        </div>
+      </div>`,
+    choices: ['送出'],
+    data: { data_type: 'mai_scale', participant_id: participantId },
+    on_load() {
+      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      if (btn) btn.disabled = true;
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          captured[this.name] = parseInt(this.value);
+          const allFilled = MAI_ITEMS.every((_, i) => captured[`mai_${i}`] !== undefined);
+          if (btn) btn.disabled = !allFilled;
+        });
+      });
+    },
+    on_finish(data) {
+      data.data_type      = 'mai_scale';
+      data.participant_id = participantId;
+      MAI_ITEMS.forEach((_, i) => {
+        data[`mai_${i + 1}`] = captured[`mai_${i}`] !== undefined ? captured[`mai_${i}`] : null;
+      });
+    },
+  };
+}
+
 // ============================================================
 // SECTION 5 — CHAT ANIMATION
 // ============================================================
@@ -736,17 +940,32 @@ async function main() {
     timeline.push(buildScalePage(jsPsych, robotConfig, participantId));
   });
 
+  // ---- MAI scale (第三部分：問卷填答) ----
+  timeline.push(buildMAIPage(jsPsych, participantId));
+
   if (!local) {
     timeline.push({ type: jsPsychPavlovia, command: 'finish' });
   }
 
-  // Debrief
+  // ---- Debrief / 結束頁 ----
   timeline.push({
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-      <div class="page-wrap">
-        <h2>實驗結束</h2>
-        <p style="font-size:16px;">感謝您的參與！您的回答已成功記錄。</p>
+      <div class="page-wrap" style="max-width:680px;margin:0 auto;padding:40px 20px;line-height:1.9;font-size:15px;text-align:left;">
+        <h2 style="text-align:center;margin-bottom:24px;">感謝您完成本研究！</h2>
+        <p>您的實驗編號為：</p>
+        <p style="font-size:20px;font-weight:bold;text-align:center;letter-spacing:2px;
+                  background:#f5f5f5;border-radius:8px;padding:12px 20px;margin:12px 0;">
+          ${participantId}
+        </p>
+        <p>請記下此編號，並將編號填寫於
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfxpd8Qq0zMBcWx06Zs5Qf2PYDp-VvZYg-h1BkKHBtG0sVIiQ/viewform?usp=header"
+             target="_blank" style="color:#2471a3;">時數證明回報表單</a>。
+        </p>
+        <p style="color:#c0392b;font-size:14px;">
+          填答時請務必記下編號，否則將造成無法查證您的作答情形而無法加分，造成不便敬請見諒。<br>
+          此編號請勿重複回報或外流給他人，若有兩人以上回報同一編號，因無法確認編號歸屬者，重複使用者皆全部無法獲得加分。
+        </p>
       </div>`,
     choices: ['結束'],
     data: { data_type: 'debrief' },
