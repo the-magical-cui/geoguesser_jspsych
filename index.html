@@ -64,10 +64,8 @@
     .chat-avatar {
       width: 64px;
       height: 64px;
-      border-radius: 50%;
       object-fit: cover;
       margin-right: 12px;
-      background: #ddd;
     }
     .chat-robot-name {
       font-size: 14px;
@@ -87,6 +85,7 @@
       align-self: flex-start;
       font-size: 15px;
       line-height: 1.7;
+      text-align: left;
       opacity: 0;
       transition: opacity 0.4s ease;
     }
@@ -210,11 +209,10 @@
     .robot-intro-img {
       width: 200px;
       height: 200px;
-      border-radius: 50%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
       margin: 20px auto;
-      background: #ddd;
+      border-radius: 50%;
     }
 
     /* ---- Image sizes ---- */

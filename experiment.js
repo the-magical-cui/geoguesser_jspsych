@@ -18,6 +18,7 @@ const TONE_ASSIGNMENT = LATIN_SQUARE[CONDITION_INDEX];
 const TONE_KEYS   = ['層級一', '層級二', '層級三', '層級四'];
 const ROBOT_NAMES = ['機器人 A', '機器人 B', '機器人 C', '機器人 D'];
 const STIMULI_DIR = 'final_stimfile';
+const AVATAR_DIR  = 'stimulus'; // level1.png … level4.png
 
 // ============================================================
 // SECTION 2 — PURE UTILITIES
@@ -102,10 +103,10 @@ async function loadCSV(url) {
 // ============================================================
 
 function progressBarHTML(blockNum, trialNum) {
-  const pct = Math.round((trialNum / 15) * 100);
+  const pct = Math.round((trialNum / 10) * 100);
   return `
     <div class="progress-wrap">
-      <div class="progress-label">第 ${blockNum} 段&emsp;${trialNum} / 15</div>
+      <div class="progress-label">第 ${blockNum} 段&emsp;${trialNum} / 10</div>
       <div class="progress-track">
         <div class="progress-fill" style="width:${pct}%"></div>
       </div>
@@ -136,7 +137,7 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
   const practiceChoices  = [practiceInfo.opt1, practiceInfo.opt2, practiceInfo.opt3, practiceInfo.opt4];
   const practiceSentences = (scriptsLookup[practiceInfo.stimFile] &&
     scriptsLookup[practiceInfo.stimFile]['層級一']) || ['（練習用台詞）'];
-  const practiceRobot = { avatarFile: 'avatar_1', name: '練習機器人', toneName: '層級一', toneLevel: 0, slot: -1 };
+  const practiceRobot = { avatarFile: 'level1', name: '練習機器人', toneName: '層級一', toneLevel: 0, slot: -1 };
   const ps = { guess1: null, guess2: null }; // practice state
 
   const INSTR_STYLE = 'max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;';
@@ -161,7 +162,7 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     choices: ['確認，開始填答基本資料'],
     data: { data_type: 'consent' },
     on_load() {
-      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      const btn = document.querySelector('.jspsych-btn');
       if (btn) btn.disabled = true;
       document.getElementById('consent-check').addEventListener('change', function () {
         if (btn) btn.disabled = !this.checked;
@@ -200,7 +201,7 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     choices: ['確認'],
     data: { data_type: 'demographics' },
     on_load() {
-      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      const btn = document.querySelector('.jspsych-btn');
       if (btn) btn.disabled = true;
       function checkFilled() {
         const gender = document.querySelector('input[name="demo-gender"]:checked');
@@ -367,14 +368,14 @@ function buildRobotIntroPage(jsPsych, robotConfig) {
     stimulus: `
       <div class="page-wrap">
         <p style="font-size:18px;">接下來您將與以下機器人進行對話</p>
-        <img src="${STIMULI_DIR}/${robotConfig.avatarFile}.jpg"
-             class="robot-intro-img" alt="機器人頭像"
-             onerror="this.style.background='#ccc'">
+        <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
+             class="robot-intro-img" alt="機器人頭像">
+        <p style="font-size:14px;color:#888;margin-top:14px;">請等待五秒後，點按下一頁</p>
       </div>`,
     choices: ['開始'],
     data: { data_type: 'robot_intro', robot_avatar: robotConfig.avatarFile },
     on_load() {
-      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      const btn = document.querySelector('.jspsych-btn');
       if (!btn) return;
       btn.style.display = 'none';
       setTimeout(() => { btn.style.display = ''; }, LOCK_MS);
@@ -531,9 +532,9 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb) {
 
           <!-- Top 40 %: robot avatar, centred -->
           <div style="flex:0 0 40%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
-            <img src="${STIMULI_DIR}/${robotConfig.avatarFile}.jpg"
-                 style="width:120px;height:120px;border-radius:50%;object-fit:cover;background:#ddd;box-shadow:0 2px 8px rgba(0,0,0,.12);"
-                 onerror="this.style.background='#bbb'" alt="">
+            <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
+                 style="width:120px;height:120px;object-fit:contain;border-radius:50%;"
+                 alt="">
             <span style="font-size:14px;color:#555;">${robotConfig.name}</span>
           </div>
 
@@ -568,12 +569,11 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
     { left: '似機械的', right: '似人類的', name: 'godspeed_2' },
     { left: '無意識的', right: '有意識的', name: 'godspeed_3' },
     { left: '人工的',   right: '逼真的',   name: 'godspeed_4' },
-    { left: '動作僵硬', right: '動作流暢', name: 'godspeed_5' },
-    { left: '不喜歡',   right: '喜歡',     name: 'godspeed_6' },
-    { left: '不友好的', right: '友好的',   name: 'godspeed_7' },
-    { left: '不親切的', right: '親切的',   name: 'godspeed_8' },
-    { left: '不愉快的', right: '愉快的',   name: 'godspeed_9' },
-    { left: '惡劣的',   right: '良好的',   name: 'godspeed_10' },
+    { left: '不喜歡',   right: '喜歡',     name: 'godspeed_5' },
+    { left: '不友好的', right: '友好的',   name: 'godspeed_6' },
+    { left: '不親切的', right: '親切的',   name: 'godspeed_7' },
+    { left: '不愉快的', right: '愉快的',   name: 'godspeed_8' },
+    { left: '惡劣的',   right: '良好的',   name: 'godspeed_9' },
   ];
   const ALL_NAMES = [...GODSPEED.map(g => g.name), 'trust'];
 
@@ -583,9 +583,9 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
   const stimHTML = `
     <div class="scale-wrap">
       <div style="text-align:center;margin-bottom:20px;">
-        <img src="${STIMULI_DIR}/${robotConfig.avatarFile}.jpg"
-             style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#ddd"
-             onerror="this.style.background='#bbb'" alt="">
+        <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
+             style="width:80px;height:80px;object-fit:contain;border-radius:50%;"
+             alt="">
         <p style="margin-top:10px;font-size:15px;">以下請根據您和這位機器人互動的整體印象來回答</p>
       </div>
 
@@ -611,7 +611,7 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
     choices: ['送出'],
     data: { data_type: 'scale_page' },
     on_load() {
-      const submitBtn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      const submitBtn = document.querySelector('.jspsych-btn');
       if (submitBtn) submitBtn.disabled = true;
 
       function allFilled() {
@@ -739,7 +739,7 @@ function buildMAIPage(jsPsych, participantId) {
     choices: ['送出'],
     data: { data_type: 'mai_scale', participant_id: participantId },
     on_load() {
-      const btn = document.querySelector('.jspsych-html-button-response-btngroup button');
+      const btn = document.querySelector('.jspsych-btn');
       if (btn) btn.disabled = true;
       document.querySelectorAll('input[type="radio"]').forEach(radio => {
         radio.addEventListener('change', function () {
@@ -769,9 +769,9 @@ function scrollToBottom(el) {
 }
 
 function animateChatSentences(sentences, container, onComplete) {
-  const DWELL_MIN   = 1000; // ms to wait after bubble appears before next one
-  const DWELL_RANGE = 500;  // random extra 0–500 ms → total dwell ≈ 1000–1500 ms
-  const TYPING_MS   = 750;  // how long to show typing dots before each bubble
+  const TYPING_MS = 400;       // typing dots duration before each bubble
+  const DWELL_MIN = 700;       // ms to wait after bubble appears
+  const DWELL_RANGE = 400;     // random extra 0–400 ms  → total 700–1100 ms
 
   // Reusable typing indicator element
   const typingEl = document.createElement('div');
@@ -780,7 +780,7 @@ function animateChatSentences(sentences, container, onComplete) {
 
   let idx = 0;
 
-  function next() {
+  function nextBubble() {
     if (idx >= sentences.length) {
       if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
       onComplete();
@@ -792,29 +792,28 @@ function animateChatSentences(sentences, container, onComplete) {
     scrollToBottom(typingEl);
 
     setTimeout(function () {
-      // Remove typing indicator, show sentence bubble
       if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
 
+      // Show bubble
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble';
       bubble.textContent = sentences[idx];
       container.appendChild(bubble);
-
-      // Trigger CSS fade-in (needs two rAF frames for transition to fire)
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           bubble.classList.add('visible');
-          scrollToBottom(bubble);  // scroll after element has rendered height
+          scrollToBottom(bubble);
         });
       });
-
       idx++;
+
+      // Wait dwell, then next bubble
       const dwell = DWELL_MIN + Math.random() * DWELL_RANGE;
-      setTimeout(next, dwell);
+      setTimeout(nextBubble, dwell);
     }, TYPING_MS);
   }
 
-  next();
+  nextBubble();
 }
 
 // ============================================================
@@ -861,12 +860,15 @@ async function main() {
 
   jsPsych.data.addProperties({ participant_id: participantId });
 
+  // ---- Preload avatar images (fire-and-forget, prevents later load lag) ----
+  [1, 2, 3, 4].forEach(n => { const img = new Image(); img.src = `${AVATAR_DIR}/level${n}.png`; });
+
   // ---- Load CSVs ----
   let trialsData, scriptsData;
   try {
     const [trialsText, scriptsText] = await Promise.all([
       loadCSV('data/trials.csv'),
-      loadCSV('data/scripts.csv'),
+      loadCSV('data/scripts_v2.csv'),
     ]);
     trialsData  = parseCSV(trialsText);
     scriptsData = parseCSV(scriptsText);
@@ -897,23 +899,23 @@ async function main() {
                     || trialsData.filter(t => t.group === 'B')[0];
 
   // ---- Assign trials ----
-  const groupA = shuffle(trialsData.filter(t => t.group === 'A')).slice(0, 30);
-  const groupB = shuffle(trialsData.filter(t => t.group === 'B' && t.stimFile !== practiceInfo.stimFile)).slice(0, 30);
-  const all60  = shuffle([...groupA, ...groupB]);
+  const groupA = shuffle(trialsData.filter(t => t.group === 'A')).slice(0, 20);
+  const groupB = shuffle(trialsData.filter(t => t.group === 'B' && t.stimFile !== practiceInfo.stimFile)).slice(0, 20);
+  const all40  = shuffle([...groupA, ...groupB]);
 
   const trialGroups = [
-    all60.slice(0,  15),
-    all60.slice(15, 30),
-    all60.slice(30, 45),
-    all60.slice(45, 60),
+    all40.slice(0,  10),
+    all40.slice(10, 20),
+    all40.slice(20, 30),
+    all40.slice(30, 40),
   ];
 
   // ---- Build robot configs ----
-  // avatarOrder[slot] = which avatar (0-3) this slot uses
+  // avatarOrder is shuffled independently from tone level assignment
   const avatarOrder = shuffle([0, 1, 2, 3]);
   const robotConfigs = [0, 1, 2, 3].map(slot => ({
     slot,
-    avatarFile:  `avatar_${avatarOrder[slot] + 1}`,
+    avatarFile:  `level${avatarOrder[slot] + 1}`,
     toneLevel:   TONE_ASSIGNMENT[slot],
     toneName:    TONE_KEYS[TONE_ASSIGNMENT[slot]],
     name:        ROBOT_NAMES[slot],
@@ -939,7 +941,7 @@ async function main() {
     // Robot intro page
     timeline.push(buildRobotIntroPage(jsPsych, robotConfig));
 
-    // 15 trials × 5 pages each
+    // 10 trials × 5 pages each
     robotConfig.trials.forEach((trialInfo, trialInBlock) => {
       globalTrialNum++;
       const pages = buildTrialTimeline(
