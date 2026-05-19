@@ -466,7 +466,7 @@ function buildTrialTimeline(
     on_finish(data) {
       state.guess2        = choices[data.response];
       state.guess2Correct = (choices[data.response] === corrAns);
-      state.guess2RT      = data.rt;
+      state.guess2RT      = data.rt;  // 第二次猜測 RT
     },
   };
 
@@ -485,28 +485,31 @@ function buildTrialTimeline(
     css_classes: ['trial-confidence'],
     data: { data_type: 'page5' },
     on_finish(data) {
-      state.guess2Confidence = data.response + 1;
-      state.guess2RT         = data.rt;
+      state.guess2Confidence   = data.response + 1;
+      state.guess2ConfidenceRT = data.rt;  // page5 RT = confidence-2 RT (不覆蓋 guess2RT)
 
       // Write complete trial record onto this trial's data row
       Object.assign(data, {
-        data_type:           'trial',
-        participant_id:      participantId,
-        robot_index:         robotConfig.slot,
-        robot_avatar:        robotConfig.avatarFile,
-        robot_style:         robotConfig.toneLevel,
-        trial_number:        trialInBlock,
-        global_trial_number: globalTrialNum,
-        stim_file:           stimFile,
-        correct_answer:      corrAns,
-        guess_1:             state.guess1,
-        guess_1_correct:     state.guess1Correct,
-        guess_1_confidence:  state.guess1Confidence,
-        guess_2:             state.guess2,
-        guess_2_correct:     state.guess2Correct,
-        guess_2_confidence:  state.guess2Confidence,
-        guess_1_rt:          state.guess1RT,
-        guess_2_rt:          state.guess2RT,
+        data_type:             'trial',
+        participant_id:        participantId,
+        condition_index:       CONDITION_INDEX,
+        robot_index:           robotConfig.slot,
+        robot_avatar:          robotConfig.avatarFile,
+        robot_style:           robotConfig.toneLevel,
+        trial_number:          trialInBlock,
+        global_trial_number:   globalTrialNum,
+        stim_file:             stimFile,
+        correct_answer:        corrAns,
+        guess_1:               state.guess1,
+        guess_1_correct:       state.guess1Correct,
+        guess_1_confidence:    state.guess1Confidence,
+        guess_2:               state.guess2,
+        guess_2_correct:       state.guess2Correct,
+        guess_2_confidence:    state.guess2Confidence,
+        guess_1_rt:            state.guess1RT,
+        guess_2_rt:            state.guess2RT,            // page4 RT（第二次猜測）
+        chatroom_rt:           state.chatroomRT,          // page3 RT（聊天室停留）
+        guess_2_confidence_rt: state.guess2ConfidenceRT,  // page5 RT（第二次信心）
       });
     },
   };
@@ -559,6 +562,9 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb) {
           btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       });
+    },
+    on_finish(data) {
+      state.chatroomRT = data.rt;  // 聊天室頁面總停留時間（含動畫）
     },
   };
 }
@@ -627,10 +633,12 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
     },
     on_finish(data) {
       Object.assign(data, {
-        data_type:    'scale',
-        participant_id: participantId,
-        robot_avatar: robotConfig.avatarFile,
-        robot_style:  robotConfig.toneLevel,
+        data_type:       'scale',
+        participant_id:  participantId,
+        condition_index: CONDITION_INDEX,
+        robot_index:     robotConfig.slot,
+        robot_avatar:    robotConfig.avatarFile,
+        robot_style:     robotConfig.toneLevel,
       });
       ALL_NAMES.forEach(n => { data[n] = captured[n] !== undefined ? captured[n] : null; });
     },
