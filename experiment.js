@@ -444,7 +444,8 @@ function buildTrialTimeline(
   };
 
   // Page 3: chatroom
-  const page3 = buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb);
+  const page3 = buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb,
+    (rt) => { state.chatroomRT = rt; });
 
   // Page 4: second guess
   const page4 = {
@@ -517,7 +518,7 @@ function buildTrialTimeline(
   return [page1, page2, page3, page4, page5];
 }
 
-function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb) {
+function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb, onFinishCb) {
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
@@ -564,7 +565,7 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb) {
       });
     },
     on_finish(data) {
-      state.chatroomRT = data.rt;  // 聊天室頁面總停留時間（含動畫）
+      if (onFinishCb) onFinishCb(data.rt);
     },
   };
 }
