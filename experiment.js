@@ -236,6 +236,9 @@ function buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup) {
     },
   });
 
+  // ── Page 2b: 對人工智慧的態度量表（AIAS）──────────────────
+  tl.push(buildAIASPage(jsPsych));
+
   // ── Page 3: 第二部分說明 ──────────────────────────────────
   tl.push({
     type: jsPsychHtmlButtonResponse,
@@ -642,6 +645,89 @@ function buildScalePage(jsPsych, robotConfig, participantId) {
         robot_style:     robotConfig.toneLevel,
       });
       ALL_NAMES.forEach(n => { data[n] = captured[n] !== undefined ? captured[n] : null; });
+    },
+  };
+}
+
+function buildAIASPage(jsPsych) {
+  const AIAS_ITEMS = [
+    '我認為人工智慧是一項重要的進步。',
+    '我相信人工智慧讓人們的生活更加便利。',
+    '我相信人工智慧將為人類帶來重大貢獻。',
+    '我視人工智慧為一種威脅。',
+    '我認為人工智慧減少了人與人之間的溝通。',
+    '我擔心人工智慧將取代人類勞動力。',
+    '我相信人工智慧破壞創造力。',
+    '我喜歡使用人工智慧來產生文字內容。',
+    '我喜歡追蹤人工智慧的發展動態。',
+    '我喜歡討論與人工智慧相關的話題。',
+    '我想要與人工智慧聊天。',
+    '我喜歡使用人工智慧創作視覺作品。',
+    '我想使用人工智慧工具來達到娛樂目的。',
+  ];
+  const AIAS_OPTS  = [1, 2, 3, 4, 5, 'NA'];
+  const AIAS_LBLS  = ['非常不同意', '', '', '', '非常同意', '不適用'];
+  const COL_W = 68; // px per option column
+
+  const captured = {};
+
+  const headerHTML = `
+    <div style="display:flex;align-items:flex-end;padding:8px 0 6px;
+                border-bottom:2px solid #ccc;position:sticky;top:0;background:#fff;z-index:10;">
+      <div style="min-width:36px;"></div>
+      <div style="flex:1;"></div>
+      <div style="display:flex;flex-shrink:0;">
+        ${AIAS_OPTS.map((v, i) =>
+          `<div style="width:${COL_W}px;text-align:center;font-size:12px;color:#555;line-height:1.3;">${AIAS_LBLS[i]}</div>`
+        ).join('')}
+      </div>
+    </div>`;
+
+  const itemsHTML = AIAS_ITEMS.map((item, i) => `
+    <div style="display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;${i % 2 === 0 ? 'background:#fafafa;' : ''}">
+      <div style="min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;">${i + 1}.</div>
+      <div style="flex:1;font-size:14px;line-height:1.5;padding-right:12px;">${item}</div>
+      <div style="display:flex;flex-shrink:0;">
+        ${AIAS_OPTS.map(v => `
+          <label style="width:${COL_W}px;display:flex;justify-content:center;align-items:center;cursor:pointer;">
+            <input type="radio" name="aias_${i}" value="${v}" style="width:17px;height:17px;cursor:pointer;">
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="max-width:860px;margin:0 auto;padding:20px 20px 80px;">
+        <h3 style="font-weight:bold;margin-bottom:4px;">對人工智慧的態度</h3>
+        <p style="font-size:14px;color:#555;margin-bottom:14px;">
+          以下題目描述了對人工智慧的不同看法，請根據您個人的同意程度回答：
+        </p>
+        ${headerHTML}
+        ${itemsHTML}
+        <div id="aias-error" style="color:#c0392b;text-align:center;margin:12px 0 0;display:none;font-size:14px;">
+          請回答所有題目後再繼續
+        </div>
+      </div>`,
+    choices: ['確認，繼續'],
+    data: { data_type: 'aias' },
+    on_load() {
+      const btn = document.querySelector('.jspsych-btn');
+      if (btn) btn.disabled = true;
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          captured[this.name] = this.value === 'NA' ? 'NA' : parseInt(this.value);
+          const allFilled = AIAS_ITEMS.every((_, i) => captured[`aias_${i}`] !== undefined);
+          if (btn) btn.disabled = !allFilled;
+        });
+      });
+    },
+    on_finish(data) {
+      data.data_type = 'aias';
+      AIAS_ITEMS.forEach((_, i) => {
+        data[`aias_${i + 1}`] = captured[`aias_${i}`] !== undefined ? captured[`aias_${i}`] : null;
+      });
     },
   };
 }
