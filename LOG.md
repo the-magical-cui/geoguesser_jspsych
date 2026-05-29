@@ -50,3 +50,34 @@
   - 顯示 participantId 作為實驗編號
   - 時數證明回報表單做成可點擊超連結
   - 加分說明（紅字）
+
+[2026-05-29] UI: Avatar 改為 PNG 透明圓形（level1~4.png，stimulus/ 資料夾）
+  - Python Pillow 4x 超取樣圓形遮罩，圓形外完全透明
+  - AVATAR_DIR 常數改為 'stimulus'；avatarFile 格式 level${n}
+  - Avatar shuffle 獨立於語氣層級（avatarOrder = shuffle([0,1,2,3])）
+  - 預載所有 avatar：experiment 啟動時一次載入 level1~4.png
+
+[2026-05-29] UI: 聊天動畫時序調整
+  - 每個泡泡獨立有 typing indicator（400ms）
+  - 泡泡出現後等待 700–1100ms 再顯示下一個
+
+[2026-05-29] DATA: 修正多個資料欄位
+  - guess_2_rt：改為在 page4（二次猜測頁）記錄，page5 不覆寫
+  - chatroom_rt：透過 onFinishCb callback 從 buildChatroomPage 傳出
+  - condition_index / robot_index：新增至量表頁資料列
+  - 練習聊天室不傳 callback（避免 state 不存在的白屏錯誤）
+
+[2026-05-29] SCALE: 新增 buildAIASPage（AIAS 13 題 AI 態度量表）
+  - 插入個人資料頁後
+  - 6 選項（1–5 + 不適用）；欄位 aias_1 … aias_13
+
+[2026-05-29] UI: 新增 buildMetacogRankingPage（後設認知排序頁）
+  - 位置：四輪結束後、MAI 量表前
+  - 4 張機器人卡片（取第一道題台詞）打亂顯示順序
+  - 點選卡片依序放入 rank 1→4（由低至高，最少→最多）
+  - 資料欄位：metacog_rank_1~4（robot slot）、metacog_display_order
+  - 卡片高度自動展開（不捲動）
+
+[2026-05-29] INTRO: Debug skip URL 參數（localhost 限定）
+  - ?skip=ranking：跳過正式試驗與量表頁，直接從排序頁開始
+  - ?skip=mai：跳過排序頁，直接從 MAI 量表開始
