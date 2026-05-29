@@ -732,6 +732,160 @@ function buildAIASPage(jsPsych) {
   };
 }
 
+function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
+  // Pick first trial's script for each robot, join bubbles into one paragraph
+  const scripts = robotConfigs.map(rc => {
+    const trial = rc.trials[0];
+    const bubbles = ((scriptsLookup[trial.stimFile] || {})[rc.toneName]) || [];
+    return bubbles.filter(b => b.trim()).join(' ');
+  });
+
+  // Shuffle display order so position doesn't cue answer
+  const dispOrder = shuffle([0, 1, 2, 3]); // dispOrder[dispIdx] = rcIdx
+  const ranking   = [null, null, null, null]; // ranking[rank 0-3] = dispIdx
+
+  const cardsHTML = dispOrder.map((rcIdx, dispIdx) => {
+    const rc = robotConfigs[rcIdx];
+    return `
+      <div id="rk-src-${dispIdx}"
+           style="width:190px;border:2px solid #ddd;border-radius:10px;padding:12px;
+                  position:relative;cursor:pointer;user-select:none;transition:all 0.2s;
+                  box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <img src="${AVATAR_DIR}/${rc.avatarFile}.png"
+               style="width:52px;height:52px;object-fit:contain;border-radius:50%;flex-shrink:0;">
+          <span style="font-size:22px;font-weight:bold;color:#ccc;">${dispIdx + 1}</span>
+        </div>
+        <div style="font-size:12px;line-height:1.7;color:#444;
+                    border:1px solid #eee;border-radius:6px;padding:8px;background:#fafafa;">
+          ${scripts[rcIdx] || '（無台詞）'}
+        </div>
+        <div id="rk-badge-${dispIdx}"
+             style="display:none;position:absolute;top:-11px;right:-11px;
+                    background:#4a90d9;color:#fff;border-radius:50%;width:28px;height:28px;
+                    font-size:15px;font-weight:bold;align-items:center;justify-content:center;">
+        </div>
+      </div>`;
+  }).join('');
+
+  const rankLabels = ['最少', '', '', '最多'];
+  const slotsHTML = [0, 1, 2, 3].map(rank => `
+    <div style="text-align:center;">
+      <div style="font-size:13px;color:#666;margin-bottom:6px;">${rank + 1}${rankLabels[rank] ? '（' + rankLabels[rank] + '）' : ''}</div>
+      <div id="rk-slot-${rank}"
+           style="width:64px;height:64px;border-radius:50%;border:2px dashed #bbb;
+                  display:flex;align-items:center;justify-content:center;
+                  margin:0 auto;cursor:pointer;transition:all 0.2s;background:#fff;">
+        <span style="color:#ccc;font-size:22px;line-height:1;">+</span>
+      </div>
+    </div>`).join('');
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <div style="max-width:920px;margin:0 auto;padding:24px 20px 80px;">
+        <!-- 4 source cards -->
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;">
+          ${cardsHTML}
+        </div>
+
+        <!-- Ranking area -->
+        <div style="border:1px solid #ccc;border-radius:10px;padding:22px 20px;text-align:center;">
+          <p style="font-size:15px;line-height:1.9;margin-bottom:4px;">
+            以上四個範例分別來自你剛剛互動的機器人，請閱讀這四個機器人的答覆，<br>
+            依機器人對自身推理過程感受的豐富程度，由低至高進行排序。
+          </p>
+          <p style="font-size:13px;color:#888;margin-bottom:18px;">
+            1（最少）→ 2 → 3 → 4（最多）（點選上方方塊依序排入；點選已排入的位置可取消）
+          </p>
+          <div style="display:flex;gap:36px;justify-content:center;">
+            ${slotsHTML}
+          </div>
+        </div>
+      </div>`,
+    choices: ['送出'],
+    data: { data_type: 'metacog_ranking' },
+    on_load() {
+      const btn = document.querySelector('.jspsych-btn');
+      if (btn) btn.disabled = true;
+
+      function updateUI() {
+        // Source cards
+        for (let d = 0; d < 4; d++) {
+          const card  = document.getElementById(`rk-src-${d}`);
+          const badge = document.getElementById(`rk-badge-${d}`);
+          if (!card || !badge) continue;
+          const rank = ranking.indexOf(d);
+          if (rank !== -1) {
+            card.style.opacity     = '0.5';
+            card.style.borderColor = '#4a90d9';
+            badge.style.display    = 'flex';
+            badge.textContent      = rank + 1;
+          } else {
+            card.style.opacity     = '1';
+            card.style.borderColor = '#ddd';
+            badge.style.display    = 'none';
+          }
+        }
+        // Rank slots
+        for (let r = 0; r < 4; r++) {
+          const slot = document.getElementById(`rk-slot-${r}`);
+          if (!slot) continue;
+          const dIdx = ranking[r];
+          if (dIdx !== null) {
+            const rcIdx = dispOrder[dIdx];
+            slot.innerHTML     = `<img src="${AVATAR_DIR}/${robotConfigs[rcIdx].avatarFile}.png"
+                                       style="width:58px;height:58px;object-fit:contain;border-radius:50%;">`;
+            slot.style.borderStyle = 'solid';
+            slot.style.borderColor = '#4a90d9';
+          } else {
+            slot.innerHTML         = '<span style="color:#ccc;font-size:22px;line-height:1;">+</span>';
+            slot.style.borderStyle = 'dashed';
+            slot.style.borderColor = '#bbb';
+          }
+        }
+        // Submit button
+        if (btn) btn.disabled = !ranking.every(r => r !== null);
+      }
+
+      // Source card click: place into next empty slot (or remove if already placed)
+      for (let d = 0; d < 4; d++) {
+        const card = document.getElementById(`rk-src-${d}`);
+        if (!card) continue;
+        card.addEventListener('click', () => {
+          const existingRank = ranking.indexOf(d);
+          if (existingRank !== -1) {
+            ranking[existingRank] = null;
+          } else {
+            const emptyRank = ranking.indexOf(null);
+            if (emptyRank === -1) return;
+            ranking[emptyRank] = d;
+          }
+          updateUI();
+        });
+      }
+
+      // Rank slot click: remove robot from that slot
+      for (let r = 0; r < 4; r++) {
+        const slot = document.getElementById(`rk-slot-${r}`);
+        if (!slot) continue;
+        slot.addEventListener('click', () => {
+          if (ranking[r] !== null) { ranking[r] = null; updateUI(); }
+        });
+      }
+    },
+    on_finish(data) {
+      data.data_type            = 'metacog_ranking';
+      data.metacog_display_order = dispOrder.join(','); // dispIdx→rcIdx mapping
+      ranking.forEach((dIdx, rank) => {
+        if (dIdx !== null) {
+          data[`metacog_rank_${rank + 1}`] = robotConfigs[dispOrder[dIdx]].slot;
+        }
+      });
+    },
+  };
+}
+
 function buildMAIPage(jsPsych, participantId) {
   const MAI_ITEMS = [
     '我會定期問自己是否達到了學習目標。',
@@ -1024,31 +1178,36 @@ async function main() {
     timeline.push({ type: jsPsychPavlovia, command: 'init' });
   }
 
-  // ---- Intro + practice pages ----
-  timeline.push(...buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup));
+  // ---- Debug skip (local only): ?skip=ranking | ?skip=mai ----
+  const debugSkip = local
+    ? (new URLSearchParams(window.location.search).get('skip') || '')
+    : '';
 
-  let globalTrialNum = 0;
+  if (!debugSkip) {
+    // ---- Intro + practice pages ----
+    timeline.push(...buildIntroTimeline(jsPsych, practiceInfo, scriptsLookup));
 
-  robotConfigs.forEach((robotConfig, blockIdx) => {
-    // Rest page (shown before every block, including block 1)
-    timeline.push(buildRestPage(jsPsych, blockIdx + 1));
+    let globalTrialNum = 0;
 
-    // Robot intro page
-    timeline.push(buildRobotIntroPage(jsPsych, robotConfig));
-
-    // 10 trials × 5 pages each
-    robotConfig.trials.forEach((trialInfo, trialInBlock) => {
-      globalTrialNum++;
-      const pages = buildTrialTimeline(
-        jsPsych, robotConfig, trialInfo, scriptsLookup,
-        blockIdx + 1, trialInBlock + 1, globalTrialNum, participantId
-      );
-      timeline.push(...pages);
+    robotConfigs.forEach((robotConfig, blockIdx) => {
+      timeline.push(buildRestPage(jsPsych, blockIdx + 1));
+      timeline.push(buildRobotIntroPage(jsPsych, robotConfig));
+      robotConfig.trials.forEach((trialInfo, trialInBlock) => {
+        globalTrialNum++;
+        const pages = buildTrialTimeline(
+          jsPsych, robotConfig, trialInfo, scriptsLookup,
+          blockIdx + 1, trialInBlock + 1, globalTrialNum, participantId
+        );
+        timeline.push(...pages);
+      });
+      timeline.push(buildScalePage(jsPsych, robotConfig, participantId));
     });
+  }
 
-    // Attitude scale (Godspeed + trust)
-    timeline.push(buildScalePage(jsPsych, robotConfig, participantId));
-  });
+  if (debugSkip !== 'mai') {
+    // ---- 後設認知排序頁 ----
+    timeline.push(buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup));
+  }
 
   // ---- MAI scale (第三部分：問卷填答) ----
   timeline.push(buildMAIPage(jsPsych, participantId));
