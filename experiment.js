@@ -810,6 +810,18 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
             ${slotsHTML}
           </div>
         </div>
+
+        <!-- Open-ended reason (optional) -->
+        <div style="margin-top:24px;text-align:left;">
+          <label for="rk-reason" style="font-size:14px;color:#444;">
+            （選填）你排序的依據為何？
+          </label>
+          <textarea id="rk-reason" rows="3"
+            style="display:block;width:100%;margin-top:8px;padding:10px 12px;
+                   font-size:14px;line-height:1.6;border:1px solid #ccc;border-radius:8px;
+                   box-sizing:border-box;resize:vertical;font-family:sans-serif;"
+            placeholder="請輸入你的想法（可不填）"></textarea>
+        </div>
       </div>`,
     choices: ['送出'],
     data: { data_type: 'metacog_ranking' },
@@ -883,13 +895,15 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
       }
     },
     on_finish(data) {
-      data.data_type            = 'metacog_ranking';
+      data.data_type             = 'metacog_ranking';
       data.metacog_display_order = dispOrder.join(','); // dispIdx→rcIdx mapping
       ranking.forEach((dIdx, rank) => {
         if (dIdx !== null) {
           data[`metacog_rank_${rank + 1}`] = robotConfigs[dispOrder[dIdx]].slot;
         }
       });
+      const textarea = document.getElementById('rk-reason');
+      data.metacog_reason = textarea ? textarea.value.trim() : '';
     },
   };
 }
