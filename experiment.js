@@ -733,11 +733,10 @@ function buildAIASPage(jsPsych) {
 }
 
 function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
-  // Pick first trial's script for each robot, join bubbles into one paragraph
-  const scripts = robotConfigs.map(rc => {
+  // Pick first trial's script for each robot as individual bubbles
+  const scriptBubbles = robotConfigs.map(rc => {
     const trial = rc.trials[0];
-    const bubbles = ((scriptsLookup[trial.stimFile] || {})[rc.toneName]) || [];
-    return bubbles.filter(b => b.trim()).join(' ');
+    return ((scriptsLookup[trial.stimFile] || {})[rc.toneName] || []).filter(b => b.trim());
   });
 
   // Shuffle display order so position doesn't cue answer
@@ -746,6 +745,14 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
 
   const cardsHTML = dispOrder.map((rcIdx, dispIdx) => {
     const rc = robotConfigs[rcIdx];
+    const bubblesHTML = scriptBubbles[rcIdx].length
+      ? scriptBubbles[rcIdx].map(b =>
+          `<div style="background:#f0f0f0;border-radius:10px;padding:8px 12px;
+                       font-size:12px;line-height:1.7;color:#333;
+                       align-self:flex-start;max-width:100%;">${b}</div>`
+        ).join('')
+      : '<div style="color:#aaa;font-size:12px;">（無台詞）</div>';
+
     return `
       <div id="rk-src-${dispIdx}"
            style="width:190px;border:2px solid #ddd;border-radius:10px;padding:12px;
@@ -756,9 +763,10 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
                style="width:52px;height:52px;object-fit:contain;border-radius:50%;flex-shrink:0;">
           <span style="font-size:22px;font-weight:bold;color:#ccc;">${dispIdx + 1}</span>
         </div>
-        <div style="font-size:12px;line-height:1.7;color:#444;
+        <div style="display:flex;flex-direction:column;gap:6px;
+                    max-height:200px;overflow-y:auto;
                     border:1px solid #eee;border-radius:6px;padding:8px;background:#fafafa;">
-          ${scripts[rcIdx] || '（無台詞）'}
+          ${bubblesHTML}
         </div>
         <div id="rk-badge-${dispIdx}"
              style="display:none;position:absolute;top:-11px;right:-11px;
