@@ -370,7 +370,7 @@ function buildRobotIntroPage(jsPsych, robotConfig) {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
       <div class="page-wrap">
-        <p style="font-size:18px;">接下來您將與以下機器人進行對話</p>
+        <p style="font-size:27px;">接下來您將與以下機器人進行對話</p>
         <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
              class="robot-intro-img" alt="機器人頭像">
         <p style="font-size:14px;color:#888;margin-top:14px;">請等待五秒後，點按下一頁</p>
@@ -728,6 +728,96 @@ function buildAIASPage(jsPsych) {
       AIAS_ITEMS.forEach((_, i) => {
         data[`aias_${i + 1}`] = captured[`aias_${i}`] !== undefined ? captured[`aias_${i}`] : null;
       });
+    },
+  };
+}
+
+function buildAttentionCheckPage(jsPsych, robotConfigs) {
+  // The last robot the participant interacted with = robotConfigs[3] (4th block)
+  const lastRobot = robotConfigs[3];
+
+  // Shuffle display order for Q3 so correct answer isn't always in same position
+  const q3Order = shuffle([0, 1, 2, 3]); // q3Order[dispIdx] = rcIdx
+
+  const captured = { attn_avatar: null, attn_content: null, attn_last_robot: null };
+
+  const q3HTML = q3Order.map(rcIdx => {
+    const rc = robotConfigs[rcIdx];
+    return `
+      <label style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:8px;">
+        <input type="radio" name="attn_last_robot" value="${rc.avatarFile}"
+               style="width:18px;height:18px;cursor:pointer;">
+        <img src="${AVATAR_DIR}/${rc.avatarFile}.png"
+             style="width:80px;height:80px;object-fit:contain;border-radius:50%;">
+      </label>`;
+  }).join('');
+
+  const stimHTML = `
+    <div class="scale-wrap">
+      <p style="font-size:15px;font-weight:bold;margin-bottom:20px;text-align:center;">
+        請根據剛才的實驗經驗回答以下問題
+      </p>
+
+      <p style="font-size:14px;color:#555;margin:6px 0 10px;">
+        1. 請問您剛剛有多認真注意每個機器人的頭像照片？
+      </p>
+      ${makeScaleRowHTML('完全沒注意', '非常認真注意', 'attn_avatar')}
+
+      <div style="border-top:1px solid #ddd;margin:14px 0;"></div>
+
+      <p style="font-size:14px;color:#555;margin:6px 0 10px;">
+        2. 請問您剛剛有多認真注意每個機器人的對話內容？
+      </p>
+      ${makeScaleRowHTML('完全沒注意', '非常認真注意', 'attn_content')}
+
+      <div style="border-top:1px solid #ddd;margin:14px 0;"></div>
+
+      <p style="font-size:14px;color:#555;margin:6px 0 10px;">
+        3. 請問您剛剛最後看到的機器人為何？
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:10px 0 4px;">
+        ${q3HTML}
+      </div>
+
+      <div id="attn-error"
+           style="color:#c0392b;text-align:center;margin:12px 0 0;display:none;font-size:14px;">
+        請回答所有題目後再送出
+      </div>
+    </div>`;
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: stimHTML,
+    choices: ['送出'],
+    data: { data_type: 'attention_check' },
+    on_load() {
+      const submitBtn = document.querySelector('.jspsych-btn');
+      if (submitBtn) submitBtn.disabled = true;
+
+      function allFilled() {
+        return captured.attn_avatar     !== null &&
+               captured.attn_content    !== null &&
+               captured.attn_last_robot !== null;
+      }
+
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          if (this.name === 'attn_last_robot') {
+            captured.attn_last_robot = this.value;
+          } else {
+            captured[this.name] = parseInt(this.value, 10);
+          }
+          if (submitBtn) submitBtn.disabled = !allFilled();
+        });
+      });
+    },
+    on_finish(data) {
+      data.data_type              = 'attention_check';
+      data.attn_avatar            = captured.attn_avatar;
+      data.attn_content           = captured.attn_content;
+      data.attn_last_robot        = captured.attn_last_robot;
+      data.attn_last_robot_correct = (captured.attn_last_robot === lastRobot.avatarFile) ? 1 : 0;
+      data.attn_q3_display_order  = q3Order.join(',');
     },
   };
 }
@@ -1226,6 +1316,8 @@ async function main() {
   }
 
   if (debugSkip !== 'mai') {
+    // ---- 注意力確認頁 (Q1 頭像 / Q2 內容 / Q3 最後機器人) ----
+    timeline.push(buildAttentionCheckPage(jsPsych, robotConfigs));
     // ---- 後設認知排序頁 ----
     timeline.push(buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup));
   }
