@@ -1,0 +1,505 @@
+"trial_type","trial_index","time_elapsed","internal_node_id","participant_id","rt","stimulus","response","data_type","consented","demo_name","demo_gender","demo_age","aias_1","aias_2","aias_3","aias_4","aias_5","aias_6","aias_7","aias_8","aias_9","aias_10","aias_11","aias_12","aias_13","robot_avatar"
+"pavlovia","0","1592","0.0-0.0","P1780646019699_RR5L82","","","","","","","","","","","","","","","","","","","","","",""
+"html-button-response","1","3659","0.0-1.0","P1780646019699_RR5L82","2065","
+      <div style=""max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;"">
+        <h2 style=""margin-bottom:24px;"">歡迎參加本實驗！</h2>
+        <p>本實驗旨在了解對地景的判斷，及與機器人共同完成作業的決策歷程。本實驗包含三個部分：<br>
+        （一）個人資料填答<br>
+        （二）猜測地景拍攝地點的主要實驗<br>
+        （三）後測問卷</p>
+        <p style=""color:#c0392b;"">注意，本實驗無回上一頁選項，在實驗各階段，皆請務必確認答案再進入下一頁。</p>
+        <p>以上資訊若有問題請來信聯絡實驗聯絡人，若確認了解並同意以上資訊，請勾選同意，並按確認鍵開始填答基本資料。</p>
+        <label style=""display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;font-size:15px;cursor:pointer;"">
+          <input type=""checkbox"" id=""consent-check"" style=""width:20px;height:20px;cursor:pointer;"">
+          我同意參與本實驗
+        </label>
+      </div>","0","consent","true","","","","","","","","","","","","","","","","",""
+"html-button-response","2","6477","0.0-2.0","P1780646019699_RR5L82","2813","
+      <div style=""max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;"">
+        <h3 style=""font-weight:bold;margin-bottom:24px;"">第一部分：個人資料</h3>
+        <div style=""display:flex;align-items:center;gap:14px;margin:14px 0;"">
+          <label style=""min-width:140px;font-size:15px;""><strong>您的姓名（選填）：</strong></label>
+          <input type=""text"" id=""demo-name"" placeholder=""請輸入""
+            style=""width:260px;padding:6px 10px;font-size:15px;border:0;border-bottom:1px solid #999;outline:none;background:transparent;"">
+        </div>
+        <div style=""display:flex;align-items:center;gap:14px;margin:14px 0;"">
+          <label style=""min-width:140px;font-size:15px;""><strong>性別（必填）：</strong></label>
+          <div style=""display:flex;gap:20px;"">
+            <label style=""cursor:pointer;white-space:nowrap;""><input type=""radio"" name=""demo-gender"" value=""生理女""> 生理女</label>
+            <label style=""cursor:pointer;white-space:nowrap;""><input type=""radio"" name=""demo-gender"" value=""生理男""> 生理男</label>
+            <label style=""cursor:pointer;white-space:nowrap;""><input type=""radio"" name=""demo-gender"" value=""不願透露""> 不願透露</label>
+          </div>
+        </div>
+        <div style=""display:flex;align-items:center;gap:14px;margin:14px 0;"">
+          <label style=""min-width:140px;font-size:15px;""><strong>年齡（必填）：</strong></label>
+          <input type=""number"" id=""demo-age"" min=""1"" max=""120"" step=""1"" placeholder=""請輸入""
+            style=""width:100px;padding:6px 10px;font-size:15px;border:0;border-bottom:1px solid #999;outline:none;background:transparent;"">
+          <span id=""age-error"" style=""color:#c0392b;font-size:13px;margin-left:8px;display:none;"">請輸入正整數</span>
+        </div>
+      </div>","0","demographics","","","生理男","1","","","","","","","","","","","","","",""
+"html-button-response","3","15253","0.0-3.0","P1780646019699_RR5L82","8767","
+      <div style=""max-width:860px;margin:0 auto;padding:20px 20px 80px;"">
+        <h3 style=""font-weight:bold;margin-bottom:4px;"">對人工智慧的態度</h3>
+        <p style=""font-size:14px;color:#555;margin-bottom:14px;"">
+          以下題目描述了對人工智慧的不同看法，請根據您個人的同意程度回答：
+        </p>
+        
+    <div style=""display:flex;align-items:flex-end;padding:8px 0 6px;
+                border-bottom:2px solid #ccc;position:sticky;top:0;background:#fff;z-index:10;"">
+      <div style=""min-width:36px;""></div>
+      <div style=""flex:1;""></div>
+      <div style=""display:flex;flex-shrink:0;"">
+        <div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;"">非常不同意</div><div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;""></div><div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;""></div><div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;""></div><div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;"">非常同意</div><div style=""width:68px;text-align:center;font-size:12px;color:#555;line-height:1.3;"">不適用</div>
+      </div>
+    </div>
+        
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">1.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我認為人工智慧是一項重要的進步。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_0"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">2.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我相信人工智慧讓人們的生活更加便利。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_1"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">3.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我相信人工智慧將為人類帶來重大貢獻。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_2"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">4.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我視人工智慧為一種威脅。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_3"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">5.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我認為人工智慧減少了人與人之間的溝通。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_4"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">6.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我擔心人工智慧將取代人類勞動力。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_5"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">7.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我相信人工智慧破壞創造力。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_6"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">8.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我喜歡使用人工智慧來產生文字內容。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_7"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">9.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我喜歡追蹤人工智慧的發展動態。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_8"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">10.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我喜歡討論與人工智慧相關的話題。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_9"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">11.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我想要與人工智慧聊天。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_10"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">12.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我喜歡使用人工智慧創作視覺作品。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_11"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+    <div style=""display:flex;align-items:center;padding:9px 0;
+                border-bottom:1px solid #f0f0f0;background:#fafafa;"">
+      <div style=""min-width:36px;font-size:13px;color:#999;text-align:right;padding-right:8px;"">13.</div>
+      <div style=""flex:1;font-size:14px;line-height:1.5;padding-right:12px;"">我想使用人工智慧工具來達到娛樂目的。</div>
+      <div style=""display:flex;flex-shrink:0;"">
+        
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""1"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""2"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""3"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""4"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""5"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+          <label style=""width:68px;display:flex;justify-content:center;align-items:center;cursor:pointer;"">
+            <input type=""radio"" name=""aias_12"" value=""NA"" style=""width:17px;height:17px;cursor:pointer;"">
+          </label>
+      </div>
+    </div>
+        <div id=""aias-error"" style=""color:#c0392b;text-align:center;margin:12px 0 0;display:none;font-size:14px;"">
+          請回答所有題目後再繼續
+        </div>
+      </div>","0","aias","","","","","1","1","1","1","1","1","1","1","1","1","1","1","1",""
+"html-button-response","4","15834","0.0-4.0","P1780646019699_RR5L82","579","
+      <div style=""max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;"">
+        <h3 style=""font-weight:bold;margin-bottom:16px;"">第二部分：正式實驗</h3>
+        <p>在本部分的實驗中，您需要觀看一些地景照片，並從四個選項中選擇您認為正確的拍攝地點，之後選擇您對該猜測的信心程度，確定您的選擇後，請按確認進入下一頁。</p>
+        <p>了解以上資訊後，請按確認鍵開始練習以上部分的實驗。</p>
+      </div>","0","instruction","","","","","","","","","","","","","","","","","",""
+"html-button-response","5","16897","0.0-5.0","P1780646019699_RR5L82","1060","
+      <div style=""text-align:center;padding-bottom:60px;"">
+        <img src=""final_stimfile/arabia_sheikh_zayed_palace.jpg"" class=""stim-trial"" alt=""練習圖片"">
+        <p style=""margin-top:14px;"">請猜測您認為這張照片最可能拍攝的地點</p>
+      </div>","0","practice","","","","","","","","","","","","","","","","","",""
+"html-button-response","6","17611","0.0-6.0","P1780646019699_RR5L82","710","
+        <div style=""text-align:center;padding-bottom:60px;"">
+          <img src=""final_stimfile/arabia_sheikh_zayed_palace.jpg"" class=""stim-trial"" alt=""練習圖片"">
+          <p style=""margin-top:14px;"">您剛才選擇的答案是 <strong>阿拉伯聯合大公國</strong>，請問您對此選項的信心如何？</p>
+          <p style=""color:#888;font-size:13px;"">（1 分 = 非常沒信心；5 分 = 非常有信心）</p>
+        </div>","3","practice","","","","","","","","","","","","","","","","","",""
+"html-button-response","7","18184","0.0-7.0","P1780646019699_RR5L82","571","
+      <div style=""max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;"">
+        <p>每一題在您完成如先前頁面的選擇後，會展示一段機器人關於本題的作答想法。</p>
+        <p style=""color:#c0392b;"">注意：本機器人訓練時模擬人類回應行為，因此答案未必完全正確，請務必仔細評估內容及答案之後再決定是否採用機器人答案。</p>
+        <p>在觀看完機器人的作答想法後，會請您再次猜測本題答案，並評估您對答案的信心程度。</p>
+        <p>了解以上資訊後，請按確認鍵開始練習以上部分的實驗。</p>
+      </div>","0","instruction","","","","","","","","","","","","","","","","","",""
+"html-button-response","8","30852","0.0-8.0","P1780646019699_RR5L82","12665","
+      <div style=""display:flex;height:calc(100vh - 130px);min-height:400px;"">
+
+        <!-- ── Left 50 %: stimulus image ── -->
+        <div style=""flex:0 0 50%;display:flex;align-items:center;justify-content:center;padding:28px 16px 28px 28px;"">
+          <img src=""final_stimfile/arabia_sheikh_zayed_palace.jpg""
+               style=""max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;""
+               alt=""刺激圖片"">
+        </div>
+
+        <!-- ── Right 50 %: top (avatar) + bottom (chat) ── -->
+        <div style=""flex:1;display:flex;flex-direction:column;padding:16px 28px 16px 16px;min-width:0;"">
+
+          <!-- Top 40 %: robot avatar, centred -->
+          <div style=""flex:0 0 40%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"">
+            <img src=""stimulus/level1.png""
+                 style=""width:120px;height:120px;object-fit:contain;border-radius:50%;""
+                 alt="""">
+            <span style=""font-size:14px;color:#555;"">練習機器人</span>
+          </div>
+
+          <!-- Bottom 60 %: chat messages -->
+          <div style=""flex:1;overflow-y:auto;padding-top:6px;"">
+            <div class=""chat-messages"" id=""chat-msg-area""></div>
+          </div>
+
+        </div>
+      </div>","0","page3","","","","","","","","","","","","","","","","","",""
+"html-button-response","9","32061","0.0-9.0","P1780646019699_RR5L82","1206","
+        <div style=""text-align:center;padding-bottom:60px;"">
+          <img src=""final_stimfile/arabia_sheikh_zayed_palace.jpg"" class=""stim-trial"" alt=""練習圖片"">
+          <p style=""margin-top:14px;"">
+            您上次選擇的是 <strong>阿拉伯聯合大公國</strong>，
+            機器人認為這裡是 <strong>阿拉伯聯合大公國</strong>，<br>
+            請再次猜測您認為這張照片最可能拍攝的地點
+          </p>
+        </div>","0","practice","","","","","","","","","","","","","","","","","",""
+"html-button-response","10","32659","0.0-10.0","P1780646019699_RR5L82","596","
+        <div style=""text-align:center;padding-bottom:60px;"">
+          <img src=""final_stimfile/arabia_sheikh_zayed_palace.jpg"" class=""stim-trial"" alt=""練習圖片"">
+          <p style=""margin-top:14px;"">您剛才選擇的答案是 <strong>阿拉伯聯合大公國</strong>，請問您對此選項的信心如何？</p>
+          <p style=""color:#888;font-size:13px;"">（1 分 = 非常沒信心；5 分 = 非常有信心）</p>
+        </div>","2","practice","","","","","","","","","","","","","","","","","",""
+"html-button-response","11","33445","0.0-11.0","P1780646019699_RR5L82","784","
+      <div style=""max-width:680px;margin:0 auto;padding:30px 20px;line-height:1.9;font-size:15px;"">
+        <p style=""color:#c0392b;"">本實驗共有四輪，每輪有十五張圖。不同輪次之間，會由不同的機器人提供作答想法。</p>
+        <p>每一輪於十五張圖片回答完成後，會請您評估一些關於本輪機器人的看法。</p>
+        <p>若以上資訊有問題，可來信詢問實驗者，若無其他疑問，請按確認開始正式實驗。</p>
+      </div>","0","instruction","","","","","","","","","","","","","","","","","",""
+"html-button-response","12","34397","0.0-12.0","P1780646019699_RR5L82","947","
+      <div class=""page-wrap"">
+        <h2>第 1 / 4 段</h2>
+        <p style=""font-size:18px;color:#555;"">休息一下，準備好後請按「下一頁」繼續</p>
+      </div>","0","rest","","","","","","","","","","","","","","","","","",""
+"html-button-response","13","40389","0.0-13.0","P1780646019699_RR5L82","5987","
+      <div class=""page-wrap"">
+        <p style=""font-size:18px;"">接下來您將與以下機器人進行對話</p>
+        <img src=""stimulus/level3.png""
+             class=""robot-intro-img"" alt=""機器人頭像"">
+        <p style=""font-size:14px;color:#888;margin-top:14px;"">請等待五秒後，點按下一頁</p>
+      </div>","0","robot_intro","","","","","","","","","","","","","","","","","","level3"
+"html-button-response","14","41830","0.0-14.0","P1780646019699_RR5L82","1437","
+      <div style=""text-align:center;padding-bottom:60px;"">
+        <img src=""final_stimfile/mexico_chichen_itza.jpg"" class=""stim-trial"" alt=""刺激圖片"">
+        <p style=""margin-top:14px;"">請猜測您認為這張照片最可能拍攝的地點</p>
+      </div>
+    <div class=""progress-wrap"">
+      <div class=""progress-label"">第 1 段&emsp;1 / 10</div>
+      <div class=""progress-track"">
+        <div class=""progress-fill"" style=""width:10%""></div>
+      </div>
+    </div>","1","page1","","","","","","","","","","","","","","","","","",""
+"html-button-response","15","42460","0.0-15.0","P1780646019699_RR5L82","626","
+        <div style=""text-align:center;padding-bottom:60px;"">
+          <img src=""final_stimfile/mexico_chichen_itza.jpg"" class=""stim-trial"" alt=""刺激圖片"">
+          <p style=""margin-top:14px;"">您剛才選擇的答案是 <strong>柬埔寨</strong>，請問您對此選項的信心如何？</p>
+          <p style=""color:#888;font-size:13px;"">（1 分 = 非常沒信心；5 分 = 非常有信心）</p>
+        </div>
+    <div class=""progress-wrap"">
+      <div class=""progress-label"">第 1 段&emsp;1 / 10</div>
+      <div class=""progress-track"">
+        <div class=""progress-fill"" style=""width:10%""></div>
+      </div>
+    </div>","2","page2","","","","","","","","","","","","","","","","","",""
