@@ -525,37 +525,41 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb, onFinis
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-      <div style="display:flex;flex-direction:column;padding-bottom:30px;">
+      <div style="display:flex;height:calc(100vh - 130px);min-height:400px;">
 
-        <!-- Top: stimulus image (30% smaller → max-height 32vh) -->
-        <div style="display:flex;align-items:center;justify-content:center;padding:16px 40px 14px;">
+        <!-- ── Left 50 %: stimulus image ── -->
+        <div style="flex:0 0 50%;display:flex;align-items:center;justify-content:center;padding:28px 16px 28px 28px;">
           <img src="${stimSrc}"
-               style="max-width:100%;max-height:32vh;object-fit:contain;border-radius:6px;"
+               style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;"
                alt="刺激圖片">
         </div>
 
-        <!-- Bottom: robot avatar (40% bigger, overlaps bubble left edge) + speech bubble -->
-        <div style="display:flex;align-items:flex-end;padding:0 32px 0 16px;">
-          <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
-               style="width:210px;height:210px;object-fit:contain;flex-shrink:0;
-                      position:relative;z-index:2;margin-right:-32px;"
-               alt="${robotConfig.name}">
-          <div style="flex:1;background:#e8e8e8;border-radius:14px;min-height:110px;
-                      padding:22px 28px 22px 60px;
-                      display:flex;align-items:center;position:relative;z-index:1;">
-            <span id="chat-speech-text"
-                  style="font-size:19px;line-height:1.9;color:#222;width:100%;
-                         word-wrap:break-word;overflow-wrap:break-word;
-                         opacity:0;transition:opacity 0.3s ease;"></span>
-          </div>
-        </div>
+        <!-- ── Right 50 %: top (avatar) + bottom (chat) ── -->
+        <div style="flex:1;display:flex;flex-direction:column;padding:16px 28px 16px 16px;min-width:0;">
 
+          <!-- Top 40 %: robot avatar, centred (30% larger: 156px) -->
+          <div style="flex:0 0 40%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+            <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
+                 style="width:156px;height:156px;object-fit:contain;border-radius:50%;"
+                 alt="">
+            <span style="font-size:14px;color:#555;">${robotConfig.name}</span>
+          </div>
+
+          <!-- Bottom 60 %: chat messages -->
+          <div style="flex:1;overflow-y:auto;padding-top:6px;">
+            <div class="chat-messages" id="chat-msg-area"></div>
+          </div>
+
+        </div>
       </div>${pb}`,
     choices: ['繼續'],
+    // hide the button until animation completes
     button_html: '<button class="jspsych-btn" id="chat-continue-btn" style="display:none">%choice%</button>',
     data: { data_type: 'page3' },
     on_load() {
-      animateSpeechBubble(sentences, function () {
+      const container = document.getElementById('chat-msg-area');
+      if (!container) return;
+      animateChatSentences(sentences, container, function () {
         const btn = document.getElementById('chat-continue-btn');
         if (btn) {
           btn.style.display = 'inline-block';
@@ -1030,34 +1034,56 @@ function buildMAIPage(jsPsych, participantId) {
 // SECTION 5 — CHAT ANIMATION
 // ============================================================
 
-// Scroll the page so that the given element is visible at the bottom.
-// Slide one sentence at a time into the speech bubble; 3 s dwell per sentence.
-function animateSpeechBubble(sentences, onComplete) {
-  const DWELL_MS = 3000;   // seconds each sentence is visible
-  const FADE_MS  = 300;    // matches CSS transition:opacity 0.3s
-  const textEl   = document.getElementById('chat-speech-text');
-  if (!textEl || !sentences.length) { onComplete(); return; }
+function scrollToBottom(el) {
+  el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function animateChatSentences(sentences, container, onComplete) {
+  const TYPING_MS = 400;       // typing dots duration before each bubble
+  const DWELL_MIN = 700;       // ms to wait after bubble appears
+  const DWELL_RANGE = 400;     // random extra 0–400 ms  → total 700–1100 ms
+
+  // Reusable typing indicator element
+  const typingEl = document.createElement('div');
+  typingEl.className = 'typing-indicator';
+  typingEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
 
   let idx = 0;
 
-  function showNext() {
-    if (idx >= sentences.length) { onComplete(); return; }
+  function nextBubble() {
+    if (idx >= sentences.length) {
+      if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+      onComplete();
+      return;
+    }
 
-    // Fade out current text
-    textEl.style.opacity = '0';
+    // Show typing indicator
+    container.appendChild(typingEl);
+    scrollToBottom(typingEl);
+
     setTimeout(function () {
-      textEl.textContent = sentences[idx++];
-      void textEl.offsetHeight;          // force reflow before transition
-      textEl.style.opacity = '1';
-      if (idx < sentences.length) {
-        setTimeout(showNext, DWELL_MS);  // more sentences left
-      } else {
-        setTimeout(onComplete, DWELL_MS); // last sentence: wait then show button
-      }
-    }, FADE_MS);
+      if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+
+      // Show bubble
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble';
+      bubble.textContent = sentences[idx];
+      container.appendChild(bubble);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          bubble.classList.add('visible');
+          scrollToBottom(bubble);
+        });
+      });
+      idx++;
+
+      // Wait dwell, then next bubble
+      const dwell = DWELL_MIN + Math.random() * DWELL_RANGE;
+      setTimeout(nextBubble, dwell);
+    }, TYPING_MS);
   }
 
-  showNext();
+  nextBubble();
 }
 
 // ============================================================
