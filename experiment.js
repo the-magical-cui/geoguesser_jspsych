@@ -525,41 +525,34 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb, onFinis
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-      <div style="display:flex;height:calc(100vh - 130px);min-height:400px;">
+      <div style="display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:440px;">
 
-        <!-- ── Left 50 %: stimulus image ── -->
-        <div style="flex:0 0 50%;display:flex;align-items:center;justify-content:center;padding:28px 16px 28px 28px;">
+        <!-- Top: stimulus image -->
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px 40px 8px;">
           <img src="${stimSrc}"
                style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;"
                alt="刺激圖片">
         </div>
 
-        <!-- ── Right 50 %: top (avatar) + bottom (chat) ── -->
-        <div style="flex:1;display:flex;flex-direction:column;padding:16px 28px 16px 16px;min-width:0;">
-
-          <!-- Top 40 %: robot avatar, centred -->
-          <div style="flex:0 0 40%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
-            <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
-                 style="width:120px;height:120px;object-fit:contain;border-radius:50%;"
-                 alt="">
-            <span style="font-size:14px;color:#555;">${robotConfig.name}</span>
+        <!-- Bottom: robot avatar (bottom-left) + rectangular speech bubble -->
+        <div style="display:flex;align-items:flex-end;padding:8px 32px 16px 24px;gap:18px;min-height:170px;">
+          <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
+               style="width:150px;height:150px;object-fit:contain;flex-shrink:0;"
+               alt="${robotConfig.name}">
+          <div style="flex:1;background:#e8e8e8;border-radius:14px;padding:20px 24px;
+                      min-height:90px;display:flex;align-items:center;">
+            <span id="chat-speech-text"
+                  style="font-size:16px;line-height:1.9;color:#222;
+                         opacity:0;transition:opacity 0.3s ease;"></span>
           </div>
-
-          <!-- Bottom 60 %: chat messages -->
-          <div style="flex:1;overflow-y:auto;padding-top:6px;">
-            <div class="chat-messages" id="chat-msg-area"></div>
-          </div>
-
         </div>
+
       </div>${pb}`,
     choices: ['繼續'],
-    // hide the button until animation completes
     button_html: '<button class="jspsych-btn" id="chat-continue-btn" style="display:none">%choice%</button>',
     data: { data_type: 'page3' },
     on_load() {
-      const container = document.getElementById('chat-msg-area');
-      if (!container) return;
-      animateChatSentences(sentences, container, function () {
+      animateSpeechBubble(sentences, function () {
         const btn = document.getElementById('chat-continue-btn');
         if (btn) {
           btn.style.display = 'inline-block';
@@ -779,7 +772,7 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
   const rankLabels = ['最少', '', '', '最多'];
   const slotsHTML = [0, 1, 2, 3].map(rank => `
     <div style="text-align:center;">
-      <div style="font-size:13px;color:#666;margin-bottom:6px;">${rank + 1}${rankLabels[rank] ? '（' + rankLabels[rank] + '）' : ''}</div>
+      <div style="font-size:15px;color:#333;margin-bottom:6px;">${rank + 1}${rankLabels[rank] ? '（' + rankLabels[rank] + '）' : ''}</div>
       <div id="rk-slot-${rank}"
            style="width:64px;height:64px;border-radius:50%;border:2px dashed #bbb;
                   display:flex;align-items:center;justify-content:center;
@@ -803,7 +796,7 @@ function buildMetacogRankingPage(jsPsych, robotConfigs, scriptsLookup) {
             以上四個範例分別來自你剛剛互動的機器人，請閱讀這四個機器人的答覆，<br>
             依機器人對自身推理過程感受的豐富程度，由低至高進行排序。
           </p>
-          <p style="font-size:13px;color:#888;margin-bottom:18px;">
+          <p style="font-size:15px;color:#333;margin-bottom:18px;">
             1（最少）→ 2 → 3 → 4（最多）（點選上方方塊依序排入；點選已排入的位置可取消）
           </p>
           <div style="display:flex;gap:36px;justify-content:center;">
@@ -1035,56 +1028,33 @@ function buildMAIPage(jsPsych, participantId) {
 // ============================================================
 
 // Scroll the page so that the given element is visible at the bottom.
-function scrollToBottom(el) {
-  el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-}
-
-function animateChatSentences(sentences, container, onComplete) {
-  const TYPING_MS = 400;       // typing dots duration before each bubble
-  const DWELL_MIN = 700;       // ms to wait after bubble appears
-  const DWELL_RANGE = 400;     // random extra 0–400 ms  → total 700–1100 ms
-
-  // Reusable typing indicator element
-  const typingEl = document.createElement('div');
-  typingEl.className = 'typing-indicator';
-  typingEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+// Slide one sentence at a time into the speech bubble; 3 s dwell per sentence.
+function animateSpeechBubble(sentences, onComplete) {
+  const DWELL_MS = 3000;   // seconds each sentence is visible
+  const FADE_MS  = 300;    // matches CSS transition:opacity 0.3s
+  const textEl   = document.getElementById('chat-speech-text');
+  if (!textEl || !sentences.length) { onComplete(); return; }
 
   let idx = 0;
 
-  function nextBubble() {
-    if (idx >= sentences.length) {
-      if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
-      onComplete();
-      return;
-    }
+  function showNext() {
+    if (idx >= sentences.length) { onComplete(); return; }
 
-    // Show typing indicator
-    container.appendChild(typingEl);
-    scrollToBottom(typingEl);
-
+    // Fade out current text
+    textEl.style.opacity = '0';
     setTimeout(function () {
-      if (typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
-
-      // Show bubble
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-bubble';
-      bubble.textContent = sentences[idx];
-      container.appendChild(bubble);
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          bubble.classList.add('visible');
-          scrollToBottom(bubble);
-        });
-      });
-      idx++;
-
-      // Wait dwell, then next bubble
-      const dwell = DWELL_MIN + Math.random() * DWELL_RANGE;
-      setTimeout(nextBubble, dwell);
-    }, TYPING_MS);
+      textEl.textContent = sentences[idx++];
+      void textEl.offsetHeight;          // force reflow before transition
+      textEl.style.opacity = '1';
+      if (idx < sentences.length) {
+        setTimeout(showNext, DWELL_MS);  // more sentences left
+      } else {
+        setTimeout(onComplete, DWELL_MS); // last sentence: wait then show button
+      }
+    }, FADE_MS);
   }
 
-  nextBubble();
+  showNext();
 }
 
 // ============================================================
