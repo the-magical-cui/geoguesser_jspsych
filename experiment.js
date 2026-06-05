@@ -103,10 +103,10 @@ async function loadCSV(url) {
 // ============================================================
 
 function progressBarHTML(blockNum, trialNum) {
-  const pct = Math.round((trialNum / 10) * 100);
+  const pct = Math.round((trialNum / 5) * 100);
   return `
     <div class="progress-wrap">
-      <div class="progress-label">第 ${blockNum} 段&emsp;${trialNum} / 10</div>
+      <div class="progress-label">第 ${blockNum} 段&emsp;${trialNum} / 5</div>
       <div class="progress-track">
         <div class="progress-fill" style="width:${pct}%"></div>
       </div>
@@ -1258,16 +1258,16 @@ async function main() {
   const practiceInfo = trialsData.filter(t => t.group === 'B' && scriptsLookup[t.stimFile])[0]
                     || trialsData.filter(t => t.group === 'B')[0];
 
-  // ---- Assign trials ----
-  const groupA = shuffle(trialsData.filter(t => t.group === 'A')).slice(0, 20);
-  const groupB = shuffle(trialsData.filter(t => t.group === 'B' && t.stimFile !== practiceInfo.stimFile)).slice(0, 20);
-  const all40  = shuffle([...groupA, ...groupB]);
+  // ---- Assign trials (5 per block × 4 blocks = 20 total) ----
+  const groupA = shuffle(trialsData.filter(t => t.group === 'A')).slice(0, 10);
+  const groupB = shuffle(trialsData.filter(t => t.group === 'B' && t.stimFile !== practiceInfo.stimFile)).slice(0, 10);
+  const all20  = shuffle([...groupA, ...groupB]);
 
   const trialGroups = [
-    all40.slice(0,  10),
-    all40.slice(10, 20),
-    all40.slice(20, 30),
-    all40.slice(30, 40),
+    all20.slice(0,  5),
+    all20.slice(5,  10),
+    all20.slice(10, 15),
+    all20.slice(15, 20),
   ];
 
   // ---- Build robot configs ----
