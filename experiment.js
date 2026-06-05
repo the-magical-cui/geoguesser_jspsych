@@ -525,24 +525,27 @@ function buildChatroomPage(jsPsych, robotConfig, stimSrc, sentences, pb, onFinis
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-      <div style="display:flex;flex-direction:column;height:calc(100vh - 130px);min-height:440px;">
+      <div style="display:flex;flex-direction:column;padding-bottom:30px;">
 
-        <!-- Top: stimulus image -->
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px 40px 8px;">
+        <!-- Top: stimulus image (30% smaller → max-height 32vh) -->
+        <div style="display:flex;align-items:center;justify-content:center;padding:16px 40px 14px;">
           <img src="${stimSrc}"
-               style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;"
+               style="max-width:100%;max-height:32vh;object-fit:contain;border-radius:6px;"
                alt="刺激圖片">
         </div>
 
-        <!-- Bottom: robot avatar (bottom-left) + rectangular speech bubble -->
-        <div style="display:flex;align-items:flex-end;padding:8px 32px 16px 24px;gap:18px;min-height:170px;">
+        <!-- Bottom: robot avatar (40% bigger, overlaps bubble left edge) + speech bubble -->
+        <div style="display:flex;align-items:flex-end;padding:0 32px 0 16px;">
           <img src="${AVATAR_DIR}/${robotConfig.avatarFile}.png"
-               style="width:150px;height:150px;object-fit:contain;flex-shrink:0;"
+               style="width:210px;height:210px;object-fit:contain;flex-shrink:0;
+                      position:relative;z-index:2;margin-right:-32px;"
                alt="${robotConfig.name}">
-          <div style="flex:1;background:#e8e8e8;border-radius:14px;padding:20px 24px;
-                      min-height:90px;display:flex;align-items:center;">
+          <div style="flex:1;background:#e8e8e8;border-radius:14px;min-height:110px;
+                      padding:22px 28px 22px 60px;
+                      display:flex;align-items:center;position:relative;z-index:1;">
             <span id="chat-speech-text"
-                  style="font-size:16px;line-height:1.9;color:#222;
+                  style="font-size:19px;line-height:1.9;color:#222;width:100%;
+                         word-wrap:break-word;overflow-wrap:break-word;
                          opacity:0;transition:opacity 0.3s ease;"></span>
           </div>
         </div>
